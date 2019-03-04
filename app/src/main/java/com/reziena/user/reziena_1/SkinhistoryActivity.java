@@ -2,9 +2,10 @@ package com.reziena.user.reziena_1;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;

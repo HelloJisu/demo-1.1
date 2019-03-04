@@ -1,7 +1,6 @@
 package com.reziena.user.reziena_1;
 
 import android.util.Log;
-
 import com.kakao.auth.ISessionCallback;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;

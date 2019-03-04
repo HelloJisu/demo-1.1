@@ -1,6 +1,7 @@
 package com.reziena.user.reziena_1;
 
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.kakao.auth.ApprovalType;

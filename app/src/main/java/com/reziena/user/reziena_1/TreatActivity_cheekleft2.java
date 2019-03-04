@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import com.reziena.user.reziena_1.utils.RSBlurProcessor;
 
 import org.json.JSONArray;

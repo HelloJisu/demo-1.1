@@ -1,6 +1,14 @@
 package com.reziena.user.reziena_1;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.List;
+
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,12 +28,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.List;
 
 
 // 카메라에서 가져온 영상을 보여주는 카메라 프리뷰 클래스

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,8 +32,8 @@ public class SigninActivity extends AppCompatActivity {
     private EditText etEmail;
     private EditText etPassword;
     private EditText etPasswordConfirm;
-    String pass="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,12}$";
     LinearLayout login_signin, signin_signin;
+    private long mLastClickTime = 0;
     ImageView logincheck;
     public  Pattern email = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
@@ -81,24 +82,7 @@ public class SigninActivity extends AppCompatActivity {
                         @SuppressLint("Range")
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            String password= etPassword.getText().toString();
-                            String confirm = etPasswordConfirm.getText().toString();
-
-                            if(password.matches(pass)){
-                                logincheck.setVisibility(View.VISIBLE);
-                                etPasswordConfirm.setTextColor(Color.parseColor("#450969"));
-                                logincheck.setImageResource(R.drawable.logincheck);
-                                alphasignin.setAlpha(255);//알파값 20
-                                signin_signin.setEnabled(true);
-                            }
-                            else{
-                                logincheck.setVisibility(View.VISIBLE);
-                                etPasswordConfirm.setTextColor(Color.parseColor("#9E0958"));
-                                logincheck.setImageResource(R.drawable.loginx);
-                                alphasignin.setAlpha(50);//알파값 20
-                                signin_signin.setEnabled(false);
-                            }
-                            /*String password = etPassword.getText().toString();
+                            String password = etPassword.getText().toString();
                             String confirm = etPasswordConfirm.getText().toString();
                             if(s.length()==0){
                                 logincheck.setVisibility(View.INVISIBLE);
@@ -125,7 +109,7 @@ public class SigninActivity extends AppCompatActivity {
                                     logincheck.setVisibility(View.VISIBLE);
                                     logincheck.setImageResource(R.drawable.loginx);
                                 }
-                            }*/
+                            }
                         }
 
                         @Override
@@ -200,6 +184,11 @@ public class SigninActivity extends AppCompatActivity {
         signin_signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 10000){
+                    Toast.makeText(SigninActivity.this, "loading....", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
 
                 // 이메일 입력 확인
                 if( etEmail.getText().toString().length() == 0 ) {

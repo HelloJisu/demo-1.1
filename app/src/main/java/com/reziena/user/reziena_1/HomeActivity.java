@@ -75,14 +75,15 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeActivity extends AppCompatActivity {
 
-    BluetoothAdapter mBtAdapter;
+    public static BluetoothAdapter mBtAdapter;
     String deviceName;
     private String mDeviceAddress = "";
+    private long mLastClickTime = 0;
     LoginActivity loginActivity = (LoginActivity) LoginActivity.loginactivity;
     Handler mHandler;
     boolean measureWrinkle=false;
 
-    BluetoothDevice device;
+    public static BluetoothDevice device;
 
     static boolean isFirst = true;
 
@@ -95,10 +96,10 @@ public class HomeActivity extends AppCompatActivity {
 
     int count;
 
+
     private final int REQUEST_CODE_MOIS= 100;
     private final int REQUEST_CODE_WRIN = 200;
     Animation alphaback;
-    private long mLastClickTime = 0;
     RenderScript rs, rs2;
     Bitmap blurBitMap, blurBitMap2;
     private static Bitmap bitamp, bitamp2;
@@ -117,7 +118,7 @@ public class HomeActivity extends AppCompatActivity {
     ImageView layer1, logo,backgroundimg,dashback,dashbackimg;
     CircleImageView image, image_main;
     BottomSheetBehavior bottomSheetBehavior;
-    TextView skintype_result, moisture_score, wrinkle_score,personal, moisture_status, wrinkle_status, moisture_score_main, wrinkle_score_main, question,skintype_main,setting;
+    TextView skintype_result, moisture_score, wrinkle_score, moisture_status, wrinkle_status, moisture_score_main, wrinkle_score_main, question,skintype_main,setting,personal;
     private static final int PICK_FROM_CAMERA = 0;
     private static final int PICK_FROM_ALBUM = 1;
     private static final int CROP_FROM_IMAGE = 2;
@@ -137,7 +138,8 @@ public class HomeActivity extends AppCompatActivity {
     ImageView[] check = new ImageView[5];
     //ImageView check1, check2, check3, check4, check5;
 
-    ImageView mois_up, mois_down, wrinkle_up, wrinkle_down, imageView2;
+    ImageView mois_up, mois_down, wrinkle_up, wrinkle_down;
+    public static ImageView imageView2;
     int max_mois, max_wrink;
 
     private String userName;
@@ -320,14 +322,7 @@ public class HomeActivity extends AppCompatActivity {
                             startActivity(intent);
                         } else {
                             intent = new Intent(getApplicationContext(),noActivity.class);
-                            new Handler().postDelayed(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    screenshot();
-                                }
-                            }, 20);
+                            screenshot();
                             startActivity(intent);
                         }
                         break;
@@ -337,9 +332,10 @@ public class HomeActivity extends AppCompatActivity {
                             return;
                         }
                         mLastClickTime = SystemClock.elapsedRealtime();
+                        send("moisture->start");
                         intent = new Intent(getApplicationContext(), MoistureActivity.class);
                         overridePendingTransition(0,0);
-                        startActivityForResult(intent,REQUEST_CODE_MOIS);
+                        startActivity(intent);
                         new Handler().postDelayed(new Runnable()
                         {
                             @Override
@@ -369,6 +365,11 @@ public class HomeActivity extends AppCompatActivity {
                         }, 20);
                         break;
                     case R.id.skin_type:
+                        if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                            Log.e("중복터치","하지마세유");
+                            return;
+                        }
+                        mLastClickTime = SystemClock.elapsedRealtime();
                         intent = new Intent(getApplicationContext(), SkintypeActivity.class);
                         overridePendingTransition(0,0);
                         startActivity(intent);
@@ -455,7 +456,7 @@ public class HomeActivity extends AppCompatActivity {
                         toolbar.setVisibility(View.VISIBLE);
                         break;
                     case R.id.logo:
-                        // BT랄
+                        // BT
                         intent = new Intent(getApplicationContext(), BluetoothActivity.class);
                         startActivity(intent);
                         break;
@@ -476,7 +477,6 @@ public class HomeActivity extends AppCompatActivity {
                         doTakeAlbumAction();
                         break;
                     case R.id.imageView2:
-                        intent = new Intent(getApplicationContext(), BluetoothActivity.class);
                         new Handler().postDelayed(new Runnable()
                         {
                             @Override
@@ -485,6 +485,7 @@ public class HomeActivity extends AppCompatActivity {
                                 screenshot();
                             }
                         }, 20);
+                        intent = new Intent(getApplicationContext(), BluetoothActivity.class);
                         startActivity(intent);
                         break;
                     case R.id.setting:
@@ -524,7 +525,6 @@ public class HomeActivity extends AppCompatActivity {
         Log.e("SharedPreferences", userName);
 
         if (isFirst) getBondedDevices();
-        else imageView2.setImageResource(R.drawable.ellipsehomethera_icon);
     }
 
     private void checkPermissions() {
@@ -616,14 +616,6 @@ public class HomeActivity extends AppCompatActivity {
         mDeviceAddress = address;
         device = mBtAdapter.getRemoteDevice(mDeviceAddress);
 
-        /** Filtering Broadcast Receiver */
-        IntentFilter filter3 = new IntentFilter();
-        filter3.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-        filter3.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        filter3.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
-        filter3.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-        /** Start Broadcast Receiver */
-        this.registerReceiver(mBroadcastReceiver3, filter3);
 
         if (mBtAdapter == null || address == null) {
             Log.e(btTag, "mBtAdapter==null & address==null");
@@ -1114,28 +1106,30 @@ public class HomeActivity extends AppCompatActivity {
                 Log.e("max", String.valueOf(max));
                 Log.e("last", String.valueOf(last));
                 for (int i = 4; i>last; i--) {
+                    Log.e("현재 I ", String.valueOf(i));
                     check[i].setImageResource(R.drawable.noncheck);
-                    /*Log.e("Array.get(max)[0]", wrinkleArray.get(max)[0]);
-                    Log.e("dates[0+1+(2-i)]", dates[0] + "-"+ dates[1] + "-"+ String.valueOf(Integer.parseInt(dates[2]) - i));
-                    // 젤 최근 날짜와 오늘날짜가 같은지
-                    if (wrinkleArray.get(max)[0].equals(dates[0] + "-"+ dates[1] + "-"+ String.valueOf(Integer.parseInt(dates[2]) - i))) {
-                        if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
-                            check[last - i - 1].setImageResource(R.drawable.check);
-                        } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
-                            check[last - i - 1].setImageResource(R.drawable.check);
-                        } else check[last - i - 1].setImageResource(R.drawable.noncheck);
-                    }
-                    max--;*/
                 }
-                for (int i=0; i<last; i++) {
+                for (int i=0; i<=last; i++) {
                     // 젤 최근 날짜와 오늘날짜가 같은지
-                    if (wrinkleArray.get(max)[0].equals(dates[0] + "-"+ dates[1] + "-"+ String.valueOf(Integer.parseInt(dates[2]) - i))) {
+                    Log.e("now I ", String.valueOf(i));
+                    Log.e("date_1", wrinkleArray.get(max)[0]);
+                    int d = Integer.parseInt(dates[2]) - i;
+                    String ds = "";
+                    if (d<10) {
+                        ds = "0"+String.valueOf(d);
+                    } else ds = String.valueOf(d);
+                    Log.e("date_2", dates[0] + "-"+ dates[1] + "-"+ ds);
+                    if (wrinkleArray.get(max)[0].equals(dates[0] + "-"+ dates[1] + "-"+ ds)) {
+                        Log.e("날짜같음", "날짜같음");
                         if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
                             check[i].setImageResource(R.drawable.check);
                         } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
                             check[i].setImageResource(R.drawable.check);
                         } else check[i].setImageResource(R.drawable.noncheck);
-                    }
+
+                        max--;
+                    } else if (i==0) check[i].setImageResource(R.drawable.noncheck);
+                    else check[i].setImageResource(R.drawable.ximg);
                 }
 
             }
@@ -1204,6 +1198,8 @@ public class HomeActivity extends AppCompatActivity {
                 for(int i=0;i<jsonArray.length();i++){
                     JSONObject item = jsonArray.getJSONObject(i);
                     wrinkleArray.add(new String[]{item.getString("date"),item.getString("value")});
+                    Log.e("wrinkleArray", String.valueOf(item.getString("date")));
+                    Log.e("wrinkleArray", String.valueOf(item.getString("value")));
                 }
             } catch (JSONException e) {
                 Log.d("treat-JSON", "showResult : "+e.getMessage());
@@ -1374,13 +1370,10 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
 
         getDataMois();
-        getDataWrink();
-
-        GetData3 task3 = new GetData3();
-        task3.execute("http://"+IP_Address+"/callingSkintype.php", "");
-
+        getDataSkin();
         GetData4 task4 = new GetData4();
         task4.execute("http://"+IP_Address+"/callingTreat.php", "");
+        getDataWrink();
     }
 
     private void getDataMois() {
@@ -1396,6 +1389,8 @@ public class HomeActivity extends AppCompatActivity {
             now_m = "-";
             mois_up.setVisibility(View.INVISIBLE);
             mois_down.setVisibility(View.INVISIBLE);
+            GetData1 task1 = new GetData1();
+            task1.execute("http://"+IP_Address+"/callingMoisture.php", "");
         } else if (bef_m.equals("bef_m=none")) {
             mois_up.setVisibility(View.INVISIBLE);
             mois_down.setVisibility(View.INVISIBLE);
@@ -1459,8 +1454,9 @@ public class HomeActivity extends AppCompatActivity {
             now_w = "-";
             wrinkle_up.setVisibility(View.INVISIBLE);
             wrinkle_down.setVisibility(View.INVISIBLE);
+            GetData2 task2 = new GetData2();
+            task2.execute("http://"+IP_Address+"/callingWrinkle.php", "");
         } else if (bef_w.equals("bef_w=none")) {
-            measureWrinkle = true;
             wrinkle_up.setVisibility(View.INVISIBLE);
             wrinkle_down.setVisibility(View.INVISIBLE);
         } else {
@@ -1533,6 +1529,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setArrow(String mois, String wrink, String dbName) {
         if (dbName.equals("moisture")) {
+            Log.e("dbName==","moisture");
             if(mois.equals("up")) {
                 Log.e("setting-moisture", "up");
                 mois_up.setVisibility(View.VISIBLE);
@@ -1548,6 +1545,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
         else if (dbName.equals("wrinkle")) {
+            Log.e("dbName==","wrinkle");
             if (wrink.equals("up")) {
                 Log.e("setting-wrinkle", "up");
                 wrinkle_up.setVisibility(View.VISIBLE);
@@ -1561,6 +1559,20 @@ public class HomeActivity extends AppCompatActivity {
                 wrinkle_up.setVisibility(View.INVISIBLE);
                 wrinkle_down.setVisibility(View.INVISIBLE);
             }
+        }
+    }
+
+    private void getDataSkin() {
+        SharedPreferences spSkin = getSharedPreferences("skin", MODE_PRIVATE);
+        String skin = spSkin.getString("skin", "skin=none");
+        Log.e("skin", skin);
+
+        if (skin.equals("skin=none")) {
+            GetData3 task3 = new GetData3();
+            task3.execute("http://"+IP_Address+"/callingSkintype.php", "");
+        } else {
+            skintype_main.setText(skin);
+            skintype_result.setText(skin);
         }
     }
 
@@ -1725,39 +1737,4 @@ public class HomeActivity extends AppCompatActivity {
         dashback.setImageBitmap(blurBitMap2);
         dashback.startAnimation(alphaback);
     }
-
-    /** Broadcast Receiver for listing devices that are not yet paired */
-    private final BroadcastReceiver mBroadcastReceiver3 = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            final String action = intent.getAction();
-            Log.e("broadcasereceiver", "onReceive: ACTION____________come in Receiver3");
-            //Log.e(TAG, "Now Action?::" + action);
-
-            if(BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                Log.e(btTag,"Now Action?:: " + action);
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        // UI 작업 O
-                        Log.e("mHandler", "init");
-                        imageView2.setImageResource(R.drawable.ellipsehomethera_icon);
-                    }
-                });
-                Toast toast = Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT);
-                toast.show();
-                unregisterReceiver(mBroadcastReceiver3);
-            }
-            else if(BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(intent.getAction())) {
-                Log.e(btTag,"Now Action?:: " + action);
-            }
-            else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(intent.getAction())) {
-                Log.e(btTag,"Now Action?:: " + action);
-            }
-            else if (BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED.equals(intent.getAction())) {
-                Log.e(btTag,"Now Action?:: " + action);
-            }
-        }
-    };
 }

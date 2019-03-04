@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static android.view.PixelCopy.request;
+
 public class URLConnector extends Thread {
 
 

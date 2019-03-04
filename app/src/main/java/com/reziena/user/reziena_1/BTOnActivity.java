@@ -4,12 +4,15 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -17,8 +20,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.UUID;
+import java.util.Timer;
+import java.util.TimerTask;import java.util.UUID;
 
 public class BTOnActivity extends AppCompatActivity {
 
@@ -201,7 +206,6 @@ public class BTOnActivity extends AppCompatActivity {
                         isFound = true;
                         nowInter=true;
                         Log.e(HomeActivity.devName, "디바이스 찾ㅇa!");
-                        //nowInter=true;
                         t.interrupt();
                         Log.e("t.interrupt:", String.valueOf(t.isInterrupted()));
                         if (t.isInterrupted()) {
