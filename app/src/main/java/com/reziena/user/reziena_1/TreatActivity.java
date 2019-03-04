@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,17 +13,13 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,11 +32,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
 import java.util.TimerTask;
 
 public class TreatActivity extends AppCompatActivity {
@@ -70,12 +60,9 @@ public class TreatActivity extends AppCompatActivity {
     String part;
     public static Activity treatactivity;
 
-
-
     private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private DatabaseReference underrightdata,underleftdata,cheekleftdata,cheekrightdata;
-
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -190,10 +177,25 @@ public class TreatActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        getDataTreat();
+    }
 
-        GetData task = new GetData();
-        task.execute("http://"+HomeActivity.IP_Address+"/callingTreat.php", "");
+    private void getDataTreat() {
+        SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+        Date currentTime = new Date();
+        String date = mSimpleDateFormat.format(currentTime);
 
+        SharedPreferences treat_date = getSharedPreferences("tDate", MODE_PRIVATE);
+        SharedPreferences treat_zone = getSharedPreferences("tZone", MODE_PRIVATE);
+        String tDate = treat_date.getString("tDate", "tDate=none");
+        treatResult = treat_zone.getString("tZone", "tZone=none");
+        Log.e("treat_date", tDate);
+        Log.e("treat_zone", treatResult);
+
+        if (tDate.equals("tDate=none")||!(tDate.equals(date))) {
+            GetData task = new GetData();
+            task.execute("http://"+HomeActivity.IP_Address+"/callingTreathome.php", "");
+        } else if (tDate.equals(date)) checkResult();
     }
 
     class GetData extends AsyncTask<String, Void, String> {
@@ -208,27 +210,7 @@ public class TreatActivity extends AppCompatActivity {
             else if (getResult.contains("No_results")) {}
             else {
                 showResult(getResult);
-
-                // underleft
-                if (treatResult.contains("under_l")) {
-                    underleft.setEnabled(false);
-                    underleft.setImageResource(R.drawable.underleftdone);
-                }
-                // underright
-                if (treatResult.contains("under_r")) {
-                    underright.setEnabled(false);
-                    underright.setImageResource(R.drawable.underrightdone);
-                }
-                // cheekl
-                if (treatResult.contains("cheek_l")) {
-                    cheekl.setEnabled(false);
-                    cheekl.setImageResource(R.drawable.cheekleftdone);
-                }
-                // cheekr
-                if (treatResult.contains("cheek_r")) {
-                    cheekr.setEnabled(false);
-                    cheekr.setImageResource(R.drawable.cheekrightdone);
-                }
+                checkResult();
             }
         }
 
@@ -311,5 +293,27 @@ public class TreatActivity extends AppCompatActivity {
         }
     }
 
+    public void checkResult() {
+        // underleft
+        if (treatResult.contains("under_l")) {
+            underleft.setEnabled(false);
+            underleft.setImageResource(R.drawable.underleftdone);
+        }
+        // underright
+        if (treatResult.contains("under_r")) {
+            underright.setEnabled(false);
+            underright.setImageResource(R.drawable.underrightdone);
+        }
+        // cheekl
+        if (treatResult.contains("cheek_l")) {
+            cheekl.setEnabled(false);
+            cheekl.setImageResource(R.drawable.cheekleftdone);
+        }
+        // cheekr
+        if (treatResult.contains("cheek_r")) {
+            cheekr.setEnabled(false);
+            cheekr.setImageResource(R.drawable.cheekrightdone);
+        }
+    }
 
 }

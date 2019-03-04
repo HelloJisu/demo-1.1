@@ -1,6 +1,5 @@
 package com.reziena.user.reziena_1;
 
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -8,7 +7,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,7 +19,7 @@ import java.util.UUID;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class BluetoothConnectionService {
-    private static final String appName = "Reziena";
+    private static final String appName = "reziena";
 
     String btTag = "BLUETOOTH_CONNECT";
 
@@ -282,7 +280,13 @@ public class BluetoothConnectionService {
                     bytes = mmInStream.read(buffer);
                     Log.e(btTag, "bytes = mmInStream.read(buffer); complete!!!");
                     String incomingMessage = new String(buffer, 0, bytes);
+                    String[] ak = incomingMessage.split("/");
+                    int get = Integer.parseInt(ak[1]);
+                    if (incomingMessage.contains("moisture")) MoistureActivity.moisRand=get;
+                    else if (incomingMessage.contains("wrinkle")) WrinkleResultActivity.wrinkRand=get;
+
                     Log.e(btTag, "InputStream: " + incomingMessage + "real complete!!!!!!!!!!!!!!!!!");
+
                 } catch (IOException e) {
                     Log.e(btTag, "write: Error reading Input Stream. " + e.getMessage());
                     break;

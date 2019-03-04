@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -18,14 +18,12 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 public class WrinkleResultActivity extends AppCompatActivity {
 
@@ -37,6 +35,8 @@ public class WrinkleResultActivity extends AppCompatActivity {
   HomeActivity homeactivity = (HomeActivity)HomeActivity.homeactivity;
   MainActivity mainactivity = (MainActivity) MainActivity.mainnactivity;
   Intent home;
+
+  public static int wrinkRand=8;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -61,33 +61,42 @@ public class WrinkleResultActivity extends AppCompatActivity {
     result_grade = findViewById(R.id.result_grade);
     result_per = findViewById(R.id.result_per);
 
-    Random rand = new Random();
-    int r = rand.nextInt(6);
-    switch (r) {
-      case 0:
-        grade = "A+"; per = "100"; break;
-      case 1:
-        grade = "A"; per = "95"; break;
-      case 2:
-        grade = "B+"; per = "90"; break;
-      case 3:
-        grade = "B"; per = "85"; break;
-      case 4:
-        grade = "C+"; per = "80"; break;
-      case 5:
-        grade = "C"; per = "75";break;
+    //Random rand = new Random();
+    //int r = rand.nextInt(6);
+
+    try {
+      Thread.sleep(1000);
+    } catch (Exception e) {
+      Log.e("thread", "오류//"+e.getMessage());
+    }
+
+    if (wrinkRand!=8) {
+      switch (wrinkRand) {
+        case 0:
+          grade = "A+"; per = "100"; break;
+        case 1:
+          grade = "A"; per = "95"; break;
+        case 2:
+          grade = "B+"; per = "90"; break;
+        case 3:
+          grade = "B"; per = "85"; break;
+        case 4:
+          grade = "C+"; per = "80"; break;
+        case 5:
+          grade = "C"; per = "75";break;
+      }
     }
 
     setData task = new setData();
     task.execute("http://"+HomeActivity.IP_Address+"/saveWrinkle.php", per);
 
     String bef_w="";
-    // 원래 모이스처 가져오기
+    // 원래 wrinkle 가져오기
     SharedPreferences bef_wrinkles = getSharedPreferences("now_w", MODE_PRIVATE);
     bef_w = bef_wrinkles.getString("now_w", "bef_w=none");
     Log.e("bef_w", bef_w);
 
-    // 새로운 모이스처 저장하기
+    // 새로운 wrinkle 저장하기
     SharedPreferences now_wrinkle = getSharedPreferences("now_w", MODE_PRIVATE);
     SharedPreferences bef_wrinkle = getSharedPreferences("bef_w", MODE_PRIVATE);
     SharedPreferences.Editor editor1 = now_wrinkle.edit();
@@ -100,9 +109,6 @@ public class WrinkleResultActivity extends AppCompatActivity {
     Log.e("now_w ", per+"퍼센트");
 
     Log.e("Wrinkle-grade", grade);
-
-    home = getIntent();
-    resultData();
 
     result_grade.setText(grade);
     result_per.setText(per +"% of wrinkle \n detected");
@@ -187,11 +193,5 @@ public class WrinkleResultActivity extends AppCompatActivity {
   public void onBackPressed() {
     super.onBackPressed();
     homeactivity.dashback.setImageResource(0);
-  }
-
-  private void resultData(){
-    Intent intent = new Intent();
-    intent.putExtra("wrinkle",grade);
-    setResult(RESULT_OK,intent);
   }
 }

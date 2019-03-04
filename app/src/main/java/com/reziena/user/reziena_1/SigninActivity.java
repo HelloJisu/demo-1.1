@@ -1,7 +1,6 @@
 package com.reziena.user.reziena_1;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -9,10 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,7 +28,6 @@ public class SigninActivity extends AppCompatActivity {
     private EditText etEmail;
     private EditText etPassword;
     private EditText etPasswordConfirm;
-    String pass="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,12}$";
     LinearLayout login_signin, signin_signin;
     ImageView logincheck;
     public  Pattern email = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -81,24 +77,7 @@ public class SigninActivity extends AppCompatActivity {
                         @SuppressLint("Range")
                         @Override
                         public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            String password= etPassword.getText().toString();
-                            String confirm = etPasswordConfirm.getText().toString();
-
-                            if(password.matches(pass)){
-                                logincheck.setVisibility(View.VISIBLE);
-                                etPasswordConfirm.setTextColor(Color.parseColor("#450969"));
-                                logincheck.setImageResource(R.drawable.logincheck);
-                                alphasignin.setAlpha(255);//알파값 20
-                                signin_signin.setEnabled(true);
-                            }
-                            else{
-                                logincheck.setVisibility(View.VISIBLE);
-                                etPasswordConfirm.setTextColor(Color.parseColor("#9E0958"));
-                                logincheck.setImageResource(R.drawable.loginx);
-                                alphasignin.setAlpha(50);//알파값 20
-                                signin_signin.setEnabled(false);
-                            }
-                            /*String password = etPassword.getText().toString();
+                            String password = etPassword.getText().toString();
                             String confirm = etPasswordConfirm.getText().toString();
                             if(s.length()==0){
                                 logincheck.setVisibility(View.INVISIBLE);
@@ -125,7 +104,7 @@ public class SigninActivity extends AppCompatActivity {
                                     logincheck.setVisibility(View.VISIBLE);
                                     logincheck.setImageResource(R.drawable.loginx);
                                 }
-                            }*/
+                            }
                         }
 
                         @Override
