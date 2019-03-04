@@ -455,7 +455,7 @@ public class HomeActivity extends AppCompatActivity {
                         toolbar.setVisibility(View.VISIBLE);
                         break;
                     case R.id.logo:
-                        // BT
+                        // BT랄
                         intent = new Intent(getApplicationContext(), BluetoothActivity.class);
                         startActivity(intent);
                         break;
