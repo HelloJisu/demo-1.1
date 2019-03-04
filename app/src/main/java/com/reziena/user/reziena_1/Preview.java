@@ -1,12 +1,9 @@
 package com.reziena.user.reziena_1;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -14,34 +11,19 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.Image;
-import android.media.ImageReader;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class Preview extends Thread {
@@ -53,14 +35,6 @@ public class Preview extends Thread {
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraCaptureSession mPreviewSession;
     private TextureView mTextureView;
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
-    static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
-    }
 
     public Preview(Context context, TextureView textureView) {
         mContext = context;
@@ -230,120 +204,6 @@ public class Preview extends Thread {
     public void setSurfaceTextureListener()
     {
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-    }
-
-
-    protected void takePicture() {
-        CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        if(null == mCameraDevice) {
-            Log.e(TAG, "mCameraDevice is null, return");
-            return;
-        }
-        try {
-            String cameraId = getBackFacingCameraId(manager);
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            try {
-                Size[] jpegSizes = null;
-                if (map != null) {
-                    jpegSizes = map.getOutputSizes(ImageFormat.JPEG);
-                }
-                int width = 640;
-                int height = 480;
-                if (jpegSizes != null && 0 < jpegSizes.length) {
-                    width = jpegSizes[0].getWidth();
-                    height = jpegSizes[0].getHeight();
-                }
-
-                ImageReader reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1);
-                List<Surface> outputSurfaces = new ArrayList<Surface>(2);
-                outputSurfaces.add(reader.getSurface());
-                outputSurfaces.add(new Surface(mTextureView.getSurfaceTexture()));
-
-                final CaptureRequest.Builder captureBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-                captureBuilder.addTarget(reader.getSurface());
-                captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-
-                // Orientation
-                int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
-                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
-
-                final File file = new File(Environment.getExternalStorageDirectory()+"/DCIM", "pic.jpg");
-
-                ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
-                    @Override
-                    public void onImageAvailable(ImageReader reader) {
-                        Image image = null;
-                        try {
-                            image = reader.acquireLatestImage();
-                            ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                            byte[] bytes = new byte[buffer.capacity()];
-                            buffer.get(bytes);
-                            save(bytes);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } finally {
-                            if (image != null) {
-                                image.close();
-                                reader.close();
-                            }
-                        }
-                    }
-
-                    private void save(byte[] bytes) throws IOException {
-                        OutputStream output = null;
-                        try {
-                            output = new FileOutputStream(file);
-                            output.write(bytes);
-                        } finally {
-                            if (null != output) {
-                                output.close();
-                            }
-                        }
-                    }
-                };
-
-                HandlerThread thread = new HandlerThread("CameraPicture");
-                thread.start();
-                final Handler backgroudHandler = new Handler(thread.getLooper());
-                reader.setOnImageAvailableListener(readerListener, backgroudHandler);
-
-                final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
-                    @Override
-                    public void onCaptureCompleted(CameraCaptureSession session,
-                                                   CaptureRequest request, TotalCaptureResult result) {
-                        super.onCaptureCompleted(session, request, result);
-                        Toast.makeText(mContext, "Saved:"+file, Toast.LENGTH_SHORT).show();
-                        startPreview();
-                    }
-
-                };
-
-                mCameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
-                    @Override
-                    public void onConfigured(CameraCaptureSession session) {
-                        try {
-                            session.capture(captureBuilder.build(), captureListener, backgroudHandler);
-                        } catch (CameraAccessException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onConfigureFailed(CameraCaptureSession session) {
-
-                    }
-                }, backgroudHandler);
-
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void onResume() {

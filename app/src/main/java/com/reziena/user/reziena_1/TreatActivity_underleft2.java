@@ -10,34 +10,26 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.renderscript.RenderScript;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.reziena.user.reziena_1.utils.RSBlurProcessor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opencv.core.Point;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -46,9 +38,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -79,6 +69,10 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
     static String finish;
     public static String IP_Address = "52.32.36.182";
     String treat;
+
+    SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat ( "yyyy-MM-dd", Locale.KOREA );
+    Date currentTime = new Date();
+    String date = mSimpleDateFormat.format ( currentTime );
 
     public static void intentpage(String string) {
         finish=string;
@@ -211,6 +205,8 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
                                 underleftstring="true";
                             }
                             if(count_ul==15){
+
+                                getDataTreat();
                                 GetData task = new GetData();
                                 task.execute("http://"+IP_Address+"/callingTreathome.php", "");
 
@@ -238,8 +234,26 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
         timer.schedule(second, 0, 1000);
     }
 
-    public void onStart() {
-        super.onStart();
+    private void getDataTreat() {
+        SharedPreferences treaat_date = getSharedPreferences("tDate", MODE_PRIVATE);
+        SharedPreferences treat_zone = getSharedPreferences("tZone", MODE_PRIVATE);
+        String tDate = treaat_date.getString("tDate", "tDate=none");
+        treat = treat_zone.getString("tZone", "");
+        Log.e("treaat_date", tDate);
+        Log.e("treat_zone", treat);
+
+        setDataTreat();
+    }
+
+    private void setDataTreat() {
+        SharedPreferences treaat_date = getSharedPreferences("tDate", MODE_PRIVATE);
+        SharedPreferences treat_zone = getSharedPreferences("tZone", MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = treaat_date.edit();
+        SharedPreferences.Editor editor2 = treat_zone.edit();
+        editor1.putString("tDate", date);
+        editor2.putString("tZone", treat+"/under_l");
+        editor1.commit();
+        editor2.commit();
     }
 
     class setData extends AsyncTask<String, Void, String> {
@@ -311,7 +325,6 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
     }
 
     class GetData extends AsyncTask<String, Void, String> {
-        List<String[]> treatArray = new ArrayList<>();
 
         @Override
         protected void onPostExecute(String getResult) { // 모르겠어// 유...
@@ -319,18 +332,32 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
 
             Log.e("쉬발",getResult);
 
-            SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat ( "yyyy-MM-dd", Locale.KOREA );
-            Date currentTime = new Date();
-            String date = mSimpleDateFormat.format ( currentTime );
-            String dates[] = date.split("-");
-
             if (getResult.contains("No_results")) {
                 setData task = new setData();
                 task.execute("http://"+HomeActivity.IP_Address+"/saveTreat.php", "under_l");
+
+                SharedPreferences treaat_date = getSharedPreferences("tDate", MODE_PRIVATE);
+                SharedPreferences treat_zone = getSharedPreferences("tZone", MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = treaat_date.edit();
+                SharedPreferences.Editor editor2 = treat_zone.edit();
+                editor1.putString("tDate", date);
+                editor2.putString("tZone", "under_l");
+                editor1.commit();
+                editor2.commit();
+
             } else {
                 showResult(getResult);
                 setData task = new setData();
                 task.execute("http://"+HomeActivity.IP_Address+"/updateTreat.php", treat+"/under_l");
+
+                SharedPreferences treaat_date = getSharedPreferences("tDate", MODE_PRIVATE);
+                SharedPreferences treat_zone = getSharedPreferences("tZone", MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = treaat_date.edit();
+                SharedPreferences.Editor editor2 = treat_zone.edit();
+                editor1.putString("tDate", date);
+                editor2.putString("tZone", treat+"/under_l");
+                editor1.commit();
+                editor2.commit();
             }
         }
 
