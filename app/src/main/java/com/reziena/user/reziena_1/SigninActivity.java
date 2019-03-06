@@ -35,6 +35,7 @@ public class SigninActivity extends AppCompatActivity {
     LinearLayout login_signin, signin_signin;
     private long mLastClickTime = 0;
     ImageView logincheck;
+    String pass=" ^[a-zA-Z0-9]*$";
     public  Pattern email = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
     @SuppressLint("Range")

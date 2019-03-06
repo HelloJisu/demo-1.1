@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     // 파이어베이스 인증 객체 생성
     private FirebaseAuth mAuth;
     private GoogleApiClient mGoogleApiClient;
+    HomeActivity homeActivity = (HomeActivity) HomeActivity.homeactivity;
     ImageView facebook, messageicon,google, twittericon,kakao;
     private LoginCallback mLoginCallback;
     private CallbackManager callbackManager;
@@ -104,6 +105,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public static Activity loginactivity;
     Drawable alphalogin;
     Drawable alphasignin;
+    String finish;
 
 
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mLoginCallback = new LoginCallback();
         appPreferences = new AppPreferences(this);
         accessToken = AccessToken.getCurrentAccessToken();
+
+        Intent subintent = getIntent();
+
+        finish = subintent.getExtras().getString("finish");
+
+        if(finish!=null){
+            if(finish.equals("finish")){
+                homeActivity.finish();
+            }
+        }
 
 
 

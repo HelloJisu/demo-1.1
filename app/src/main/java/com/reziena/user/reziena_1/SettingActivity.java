@@ -26,6 +26,7 @@ public class SettingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting);
         bluetoothactivity=SettingActivity.this;
 
+
         // popupt창 사이즈 지정
 
         WindowManager.LayoutParams lpWindow = new WindowManager.LayoutParams();
@@ -87,6 +88,7 @@ public class SettingActivity extends AppCompatActivity {
                         editor9.commit();
                         Log.e("remove", "yeal~!"); //하기실어
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        intent.putExtra("finish","finish");
                         startActivity(intent);
                         finish();
                         break;
@@ -109,5 +111,6 @@ public class SettingActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         homeactivity.backgroundimg.setImageResource(0);
+        homeactivity.dashback.setImageResource(0);
     }
 }

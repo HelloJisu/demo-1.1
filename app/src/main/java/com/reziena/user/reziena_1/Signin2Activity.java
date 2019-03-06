@@ -73,7 +73,7 @@ public class Signin2Activity extends AppCompatActivity {
     private String absolutePath;//
     CircleImageView profile;
     String month, year, genderstring, countrystring, day;
-    public static Activity skinhistoryactivity;
+    public static Activity signin2;
     HomeActivity homeactivity = (HomeActivity)HomeActivity.homeactivity;
     String namestring, idstring, profileurl;
     private static final String DEFAULT_LOCAL = "Portugal";
@@ -84,7 +84,7 @@ public class Signin2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin2);
-        skinhistoryactivity = Signin2Activity.this;
+        signin2 = Signin2Activity.this;
 
         Intent subintent = getIntent();
 
@@ -104,12 +104,12 @@ public class Signin2Activity extends AppCompatActivity {
         for(int i=0;i<100;i++){
             yearAdapter.add(year--);
         }
-        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item,yearAdapter);
+        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,yearAdapter);
         birthday_year.setAdapter(arrayAdapter);
 
         Spinner birthday_month = findViewById(R.id.birthday_month);
         ArrayAdapter monthAdapter = ArrayAdapter.createFromResource(this,
-                R.array.birthday_month, android.R.layout.simple_spinner_item);
+                R.array.birthday_month, R.layout.spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         birthday_month.setAdapter(monthAdapter);
 
@@ -118,18 +118,18 @@ public class Signin2Activity extends AppCompatActivity {
         for(int i=1;i<=31;i++){
             birthAdapter.add(i);
         }
-        ArrayAdapter<Integer> birthdayAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item,birthAdapter);
+        ArrayAdapter<Integer> birthdayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,birthAdapter);
         birthday_day.setAdapter(birthdayAdapter);
 
         Spinner couuntry = findViewById(R.id.country);
         ArrayAdapter countryarray = ArrayAdapter.createFromResource(this,
-                R.array.country, android.R.layout.simple_spinner_item);
+                R.array.country, R.layout.spinner_item);
         countryarray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         couuntry.setAdapter(countryarray);
 
         Spinner gender = findViewById(R.id.gender);
         ArrayAdapter genderAdapter = ArrayAdapter.createFromResource(this,
-                R.array.gender, android.R.layout.simple_spinner_item);
+                R.array.gender, R.layout.spinner_item);
         countryarray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         gender.setAdapter(genderAdapter);
 
@@ -219,6 +219,11 @@ public class Signin2Activity extends AppCompatActivity {
                             return;
                         }
                         mLastClickTime = SystemClock.elapsedRealtime();
+                        if( name.getText().toString().length() == 0 ) {
+                            Toast.makeText(Signin2Activity.this, "이름을 입력해주세요!", Toast.LENGTH_SHORT).show();
+                            name.requestFocus();
+                            return;
+                        }
                         String saveName = name.getText().toString();
                         String birth = yearint+"/"+monthint+"/"+dayint;
                         setData task = new setData();
@@ -334,6 +339,7 @@ public class Signin2Activity extends AppCompatActivity {
                 Log.e("Login ", name+"님 로그인");
                 Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
                 intent.putExtra("name","skintypedialog");
+                intent.putExtra("signin","finish");
                 startActivity(intent);
                 finish();
             }

@@ -63,6 +63,7 @@
                         android:weightSum="1"
                         android:orientation="horizontal">
                         <EditText
+                            android:lines="1"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="0.75"
@@ -90,6 +91,7 @@
                         android:weightSum="1"
                         android:orientation="horizontal">
                         ﻿<Spinner
+                        android:spinnerMode="dropdown"
                         android:id="@+id/gender"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -135,6 +137,7 @@
                         android:weightSum="1"
                         android:orientation="horizontal">
                         ﻿<Spinner
+                        android:spinnerMode="dropdown"
                         android:id="@+id/country"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -198,16 +201,19 @@
                     android:orientation="horizontal"
                     android:weightSum="1">
                     ﻿<Spinner
+                    android:spinnerMode="dropdown"
                     android:id="@+id/birthday_year"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.35" />
                     ﻿<Spinner
+                    android:spinnerMode="dropdown"
                     android:id="@+id/birthday_month"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.25" />
                     ﻿<Spinner
+                    android:spinnerMode="dropdown"
                     android:id="@+id/birthday_day"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

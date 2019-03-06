@@ -23,7 +23,7 @@ public class WrinklesActivity extends AppCompatActivity {
 
     String permissionstring;
     ImageButton imageButton;
-    HomeActivity homeactivity = (HomeActivity)HomeActivity.homeactivity;
+    HomeActivity homeactivity = (HomeActivity) HomeActivity.homeactivity;
     TextView ready;
     static final int REQUEST_CAMERA = 1;
 
@@ -53,7 +53,7 @@ public class WrinklesActivity extends AppCompatActivity {
                 switch (v.getId()) {
                     case R.id.ready:
                         int permissionCamera = ContextCompat.checkSelfPermission(WrinklesActivity.this, Manifest.permission.CAMERA);
-                        if(permissionCamera == PackageManager.PERMISSION_DENIED) {
+                        if (permissionCamera == PackageManager.PERMISSION_DENIED) {
                             ActivityCompat.requestPermissions((Activity) WrinklesActivity.this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
                             ActivityCompat.requestPermissions((Activity) WrinklesActivity.this, new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS}, REQUEST_CAMERA);
                             Log.e("야야야!", "퍼미션 허용~");
@@ -62,7 +62,6 @@ public class WrinklesActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivity(intent);
                         }
-
                     case R.id.imageButton:
                         homeactivity.dashback.setImageResource(0);
                         finish();
@@ -74,10 +73,10 @@ public class WrinklesActivity extends AppCompatActivity {
         ready.setOnClickListener(onClickListener);
     }
 
-    public boolean dispatchTouchEvent(MotionEvent ev){
+    public boolean dispatchTouchEvent(MotionEvent ev) {
         Rect dialogBounds = new Rect();
         getWindow().getDecorView().getHitRect(dialogBounds);
-        if(!dialogBounds.contains((int)ev.getX(),(int) ev.getY())){
+        if (!dialogBounds.contains((int) ev.getX(), (int) ev.getY())) {
             return false;
         }
         return super.dispatchTouchEvent(ev);
@@ -90,25 +89,18 @@ public class WrinklesActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CAMERA:
-                for (int i = 0; i < permissions.length; i++) {
-                    String permission = permissions[i];
-                    int grantResult = grantResults[i];
-                    if (permission.equals(Manifest.permission.CAMERA)) {
-                        if(grantResult == PackageManager.PERMISSION_GRANTED) {
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intent);
-                            Log.e("허용","퍼미션허용했긔");
-                        } else {
-                            Toast.makeText(this,"Should have camera permission to run", Toast.LENGTH_LONG).show();
-                            finish();
-                        }
-                    }
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+
                 }
-                break;
+                return;
         }
     }
 }

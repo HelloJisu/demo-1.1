@@ -80,6 +80,7 @@ public class HomeActivity extends AppCompatActivity {
     private String mDeviceAddress = "";
     private long mLastClickTime = 0;
     LoginActivity loginActivity = (LoginActivity) LoginActivity.loginactivity;
+    Signin2Activity signin2 = (Signin2Activity) Signin2Activity.signin2;
     Handler mHandler;
     boolean measureWrinkle=false;
 
@@ -126,6 +127,7 @@ public class HomeActivity extends AppCompatActivity {
     private int id_view;
     private String absolutePath;
     String wrinklestringg;
+    String finish;
     String moistureresult,wrinkleresult;
 
     TextView home_setName, dash_setName;
@@ -235,16 +237,24 @@ public class HomeActivity extends AppCompatActivity {
 
         Intent subintent = getIntent();
         dialogstring = subintent.getExtras().getString("name");
+        finish = subintent.getExtras().getString("signin");
+
+        if(finish!=null){
+            if(finish.equals("finish")){
+                signin2.finish();
+            }
+        }
+
 
         if(dialogstring!=null){
             if(dialogstring.equals("skintypedialog")){
                 final Intent intent = new Intent(getApplicationContext(),SkintypeAsk.class);
+                startActivity(intent);
                 new Handler().postDelayed(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        startActivity(intent);
                         screenshot();
                     }
                 }, 100);
@@ -1086,8 +1096,7 @@ public class HomeActivity extends AppCompatActivity {
             String dates[] = date.split("-");
 
             //Log.e("getdata-treat", "getResult==" + getResult);
-            if (getResult==null) {}
-            else if (getResult.contains("No_results")) {
+            if (getResult==null) {
                 Log.e("getdata-treat", "getResult==null");
                 DB_wrinkle = "-";
                 wrinkle_up.setVisibility(View.INVISIBLE);
@@ -1097,41 +1106,42 @@ public class HomeActivity extends AppCompatActivity {
                 check[2].setImageResource(R.drawable.noncheck);
                 check[3].setImageResource(R.drawable.noncheck);
                 check[4].setImageResource(R.drawable.noncheck);
-            } else {
+            }
+            showResult(getResult);
 
-                showResult(getResult);
-
-                int last = wrinkleArray.size() % 5;
-                int max = wrinkleArray.size()-1;
-                Log.e("max", String.valueOf(max));
-                Log.e("last", String.valueOf(last));
-                for (int i = 4; i>last; i--) {
-                    Log.e("현재 I ", String.valueOf(i));
-                    check[i].setImageResource(R.drawable.noncheck);
-                }
-                for (int i=0; i<=last; i++) {
+            int last = wrinkleArray.size() % 5;
+            int max = wrinkleArray.size()-1;
+            Log.e("max", String.valueOf(max));
+            Log.e("last", String.valueOf(last));
+            for (int i = 4; i>=last; i--) {
+                Log.e("현재 I ", String.valueOf(i));
+                check[i].setImageResource(R.drawable.noncheck);
+            }
+            if (max>=0) {
+                for (int i = 0; i <= last; i++) {
                     // 젤 최근 날짜와 오늘날짜가 같은지
-                    Log.e("now I ", String.valueOf(i));
-                    Log.e("date_1", wrinkleArray.get(max)[0]);
+                    //Log.e("now I ", String.valueOf(i));
+                    //Log.e("date_1", wrinkleArray.get(max)[0]);
                     int d = Integer.parseInt(dates[2]) - i;
                     String ds = "";
-                    if (d<10) {
-                        ds = "0"+String.valueOf(d);
+                    if (d < 10) {
+                        ds = "0" + String.valueOf(d);
                     } else ds = String.valueOf(d);
-                    Log.e("date_2", dates[0] + "-"+ dates[1] + "-"+ ds);
-                    if (wrinkleArray.get(max)[0].equals(dates[0] + "-"+ dates[1] + "-"+ ds)) {
-                        Log.e("날짜같음", "날짜같음");
-                        if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
-                            check[i].setImageResource(R.drawable.check);
-                        } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
-                            check[i].setImageResource(R.drawable.check);
-                        } else check[i].setImageResource(R.drawable.noncheck);
+                    Log.e("date_2", dates[0] + "-" + dates[1] + "-" + ds);
+                    if (max >= 0) {
+                        if (wrinkleArray.get(max)[0].equals(dates[0] + "-" + dates[1] + "-" + ds)) {
+                            Log.e("날짜같음", "날짜같음");
+                            if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
+                                check[last - i].setImageResource(R.drawable.check);
+                            } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
+                                check[last - i].setImageResource(R.drawable.check);
+                            } else check[last - i].setImageResource(R.drawable.noncheck);
 
-                        max--;
-                    } else if (i==0) check[i].setImageResource(R.drawable.noncheck);
-                    else check[i].setImageResource(R.drawable.ximg);
+                            max--;
+                        } else if (i == 0) check[last - i].setImageResource(R.drawable.noncheck);
+                        else check[last - i].setImageResource(R.drawable.ximg);
+                    } else check[last - i].setImageResource(R.drawable.ximg);
                 }
-
             }
         }
 
@@ -1457,6 +1467,7 @@ public class HomeActivity extends AppCompatActivity {
             GetData2 task2 = new GetData2();
             task2.execute("http://"+IP_Address+"/callingWrinkle.php", "");
         } else if (bef_w.equals("bef_w=none")) {
+            measureWrinkle = true;
             wrinkle_up.setVisibility(View.INVISIBLE);
             wrinkle_down.setVisibility(View.INVISIBLE);
         } else {

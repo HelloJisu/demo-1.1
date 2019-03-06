@@ -465,6 +465,9 @@ public class DoneActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
+        cheekleft.backgroundimg.setImageResource(0);
+        cheekright.backgroundimg.setImageResource(0);
+        underright.backgroundimg.setImageResource(0);
+        underleft.backgroundimg.setImageResource(0);
     }
 }
