@@ -72,6 +72,7 @@ import java.util.UUID;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import java.text.ParseException;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -1095,8 +1096,8 @@ public class HomeActivity extends AppCompatActivity {
 
             String dates[] = date.split("-");
 
-            //Log.e("getdata-treat", "getResult==" + getResult);
-            if (getResult==null) {
+            // DB에서 반환된 값이 없을 때 모두 nonCheck
+            if (getResult.contains("No_results")) {
                 Log.e("getdata-treat", "getResult==null");
                 DB_wrinkle = "-";
                 wrinkle_up.setVisibility(View.INVISIBLE);
@@ -1106,42 +1107,65 @@ public class HomeActivity extends AppCompatActivity {
                 check[2].setImageResource(R.drawable.noncheck);
                 check[3].setImageResource(R.drawable.noncheck);
                 check[4].setImageResource(R.drawable.noncheck);
-            }
-            showResult(getResult);
+            } else {
+                // DB에서 반환된 값이 있을 때 JSON 형식으로 받아온 값을 정리(?)
+                showResult(getResult);
 
-            int last = wrinkleArray.size() % 5;
-            int max = wrinkleArray.size()-1;
-            Log.e("max", String.valueOf(max));
-            Log.e("last", String.valueOf(last));
-            for (int i = 4; i>=last; i--) {
-                Log.e("현재 I ", String.valueOf(i));
-                check[i].setImageResource(R.drawable.noncheck);
-            }
-            if (max>=0) {
-                for (int i = 0; i <= last; i++) {
-                    // 젤 최근 날짜와 오늘날짜가 같은지
-                    //Log.e("now I ", String.valueOf(i));
-                    //Log.e("date_1", wrinkleArray.get(max)[0]);
-                    int d = Integer.parseInt(dates[2]) - i;
-                    String ds = "";
-                    if (d < 10) {
-                        ds = "0" + String.valueOf(d);
-                    } else ds = String.valueOf(d);
-                    Log.e("date_2", dates[0] + "-" + dates[1] + "-" + ds);
-                    if (max >= 0) {
-                        if (wrinkleArray.get(max)[0].equals(dates[0] + "-" + dates[1] + "-" + ds)) {
-                            Log.e("날짜같음", "날짜같음");
-                            if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
-                                check[last - i].setImageResource(R.drawable.check);
-                            } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
-                                check[last - i].setImageResource(R.drawable.check);
-                            } else check[last - i].setImageResource(R.drawable.noncheck);
+                // Wrinkle measure한 첫 날 가져오고 오늘 날짜 가져오기
+                String start = wrinkleArray.get(0)[0];
+                String end = date;
 
-                            max--;
-                        } else if (i == 0) check[last - i].setImageResource(R.drawable.noncheck);
-                        else check[last - i].setImageResource(R.drawable.ximg);
-                    } else check[last - i].setImageResource(R.drawable.ximg);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                Date startDay = null;
+                Date endDay = null;
+                try {
+                    startDay = formatter.parse(start);
+                    endDay = formatter.parse(end);
+                } catch (ParseException e) { e.printStackTrace(); }
+
+                // 오늘 - 첫날 빼기 (몇일인지) == diffDay
+                long diff = endDay.getTime() - startDay.getTime();
+                long diffDay = diff/(24 * 60 * 60 * 1000);
+
+                // diffDay를 5로 나눈 나머지 구하기 == last
+                // (화면상에서는 5개만 보이니까..)
+                int last = (int) diffDay % 5;
+                int max = wrinkleArray.size()-1;
+                Log.e("max", String.valueOf(max));
+                Log.e("last", String.valueOf(last));
+
+                // 5개에서 last를 뺀 부분을 nonCheck으로 채우기
+                for (int i = 4; i>=last; i--) {
+                    Log.e("현재 I ", String.valueOf(i));
+                    check[i].setImageResource(R.drawable.noncheck);
                 }
+                // 오늘 날짜부터 하루씩 빼면서 DB에 있는지 확인
+                // 있으면 한 파트를 완료했는지 확인 후 했으면 check 안했으면 ximg
+                if (max>=0) {
+                    for (int i = 0; i <= last; i++) {
+                        // 젤 최근 날짜와 오늘날짜가 같은지
+                        int d = Integer.parseInt(dates[2]) - i;
+                        String ds = "";
+                        if (d < 10) {
+                            ds = "0" + String.valueOf(d);
+                        } else ds = String.valueOf(d);
+                        Log.e("date_2", dates[0] + "-" + dates[1] + "-" + ds);
+                        if (max >= 0) {
+                            if (wrinkleArray.get(max)[0].equals(dates[0] + "-" + dates[1] + "-" + ds)) {
+                                Log.e("날짜같음", "날짜같음");
+                                if ((wrinkleArray.get(max)[1].contains("under_l")) && (wrinkleArray.get(max)[1].contains("under_r"))) {
+                                    check[last - i].setImageResource(R.drawable.check);
+                                } else if ((wrinkleArray.get(max)[1].contains("cheek_l")) && (wrinkleArray.get(max)[1].contains("cheek_r"))) {
+                                    check[last - i].setImageResource(R.drawable.check);
+                                } else check[last - i].setImageResource(R.drawable.noncheck);
+
+                                max--;
+                            } else if (i == 0) check[last - i].setImageResource(R.drawable.noncheck);
+                            else check[last - i].setImageResource(R.drawable.ximg);
+                        } else check[last - i].setImageResource(R.drawable.ximg);
+                    }
+                }//요기까지 보내주면 됌
+
             }
         }
 
