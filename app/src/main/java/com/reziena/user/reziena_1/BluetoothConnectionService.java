@@ -202,6 +202,9 @@ public class BluetoothConnectionService {
             Log.e("SUCCESS?", String.valueOf(success));
 
             if (success) {
+                HomeActivity.imageView2.setImageResource(R.drawable.ellipsehomethera_icon);
+                Intent intent = new Intent(getApplicationContext(), BluetoothActivity.class);
+                mContext.startActivity(intent);
                 connected(mmSocket, mmDevice);
             } else {
                 cancel();
@@ -284,11 +287,26 @@ public class BluetoothConnectionService {
                     Log.e(btTag, "bytes = mmInStream.read(buffer); complete!!!");
                     String incomingMessage = new String(buffer, 0, bytes);
                     String[] ak = incomingMessage.split("/");
+                    String check = ak[0];
                     int get = Integer.parseInt(ak[1]);
-                    if (incomingMessage.contains("moisture")) MoistureActivity.moisRand=get;
-                    else if (incomingMessage.contains("wrinkle")) WrinkleResultActivity.wrinkRand=get;
-
-                    Log.e(btTag, "InputStream: " + incomingMessage + "real complete!!!!!!!!!!!!!!!!!");
+                    Log.e("get==", String.valueOf(get));
+                    switch (check) {
+                        case "moisture":
+                            MoistureActivity.moisRand = get; break;
+                        case "wrinkle":
+                            WrinkleResultActivity.wrinkRand = get; break;
+                        case "treat_uneyeL":
+                            TreatActivity_underleft2.count_ul = get; break;
+                        case "treat_uneyeR":
+                            TreatActivity_underright2.count_ur = get; break;
+                        case "treat_cheekL":
+                            TreatActivity_cheekleft2.count = get; break;
+                        case "treat_cheekR":
+                            TreatActivity_cheekright2.count = get;
+                            //TreatActivity_cheekright2.t.start();
+                            break;
+                    }
+                    //Log.e(btTag, "InputStream: " + incomingMessage);
 
                 } catch (IOException e) {
                     Log.e(btTag, "write: Error reading Input Stream. " + e.getMessage());

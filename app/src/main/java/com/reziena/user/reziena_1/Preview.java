@@ -270,6 +270,7 @@ public class Preview extends Thread {
                 int rotation = ((Activity) mContext).getWindowManager().getDefaultDisplay().getRotation();
                 captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
+
                 final File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
 
                 ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {

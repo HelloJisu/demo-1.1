@@ -70,7 +70,8 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
     LinearLayout component;
     TextView component_txt,u_tright_txt1,u_tright_txt2,u_tleft_txt1,u_tleft_txt2,c_tright_txt1,c_tright_txt2,c_tleft_txt1,c_tleft_txt2;
     RelativeLayout treatback, underleft_layout,treat_default;
-    int undercount=0, data=0, level=0, timer_sec, count_ul=0;
+    int undercount=0, data=0, level=0, timer_sec;
+    public static int count_ul=0;
     ImageView u_tleft_line1,u_tleft_line2,u_tleft_line3,u_tleft_line4,u_tleft_line5,u_tleft_line6,
             u_tleft_line7,u_tleft_line8,u_tleft_line9,u_tleft_line10,u_tleft_line11,u_tleft_line12,u_tleft_line13;
     TimerTask second;
@@ -89,159 +90,159 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
     }
 
     public void animation() {
+        Log.e("underleft_init", "animation");
         second = new TimerTask() {
             @Override
             public void run() {
                 Log.e("카운터",String.valueOf(count_ul));
-                count_ul++;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                            if (count_ul == 1) {
-                                String str = "THIS COLUMN HAS 6 LINES.\nPLACE THE DEVICE TO THE COLORED LINE AS\nSHOWN. AND PRESS THE CENTER BUTTON TO\nSTART TREATING ONE LINE";
-                                SpannableStringBuilder ssb = new SpannableStringBuilder(str);
-                                ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 72, 126, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                component_txt.setText(ssb);
-                                u_tleft_line8.setBackgroundResource(R.drawable.underleftanim1);
-                                utlani8 = (AnimationDrawable) u_tleft_line8.getBackground();
-                                utlani8.start();
-                            }
-                            if (count_ul == 2) {
-                                utlani8.stop();
-                                u_tleft_line8.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line9.setBackgroundResource(R.drawable.underleftanim1);
-                                utlani9 = (AnimationDrawable) u_tleft_line9.getBackground();
-                                utlani9.start();
-                                u_tleft_txt1.setText("5 left");
-                            }
-                            if (count_ul == 3) {
-                                utlani9.stop();
-                                u_tleft_line9.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line10.setBackgroundResource(R.drawable.underleftanim1);
-                                utlani10 = (AnimationDrawable) u_tleft_line10.getBackground();
-                                utlani10.start();
-                                u_tleft_txt1.setText("4 left");
-                            }
-                            if (count_ul == 4) {
-                                utlani10.stop();
-                                u_tleft_line10.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line11.setBackgroundResource(R.drawable.underleftmiddle1);
-                                utlani11 = (AnimationDrawable) u_tleft_line11.getBackground();
-                                utlani11.start();
-                                u_tleft_txt1.setText("3 left");
-                            }
-                            if (count_ul == 5) {
-                                utlani11.stop();
-                                u_tleft_line11.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line12.setBackgroundResource(R.drawable.underleftanim1);
-                                utlani12 = (AnimationDrawable) u_tleft_line12.getBackground();
-                                utlani12.start();
-                                u_tleft_txt1.setText("2 left");
-                            }
-                            if (count_ul == 6) {
-                                utlani12.stop();
-                                u_tleft_line12.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line13.setBackgroundResource(R.drawable.underleftanim1);
-                                utlani13 = (AnimationDrawable) u_tleft_line13.getBackground();
-                                utlani13.start();
-                                u_tleft_txt1.setText("1 left");
-                            }
-                            if (count_ul == 7) {
-                                String str = "THIS COLUMN HAS 7 LINES.\nPLACE THE DEVICE TO THE COLORED LINE AS\nSHOWN. AND PRESS THE CENTER BUTTON TO\nSTART TREATING ONE LINE";
-                                SpannableStringBuilder ssb = new SpannableStringBuilder(str);
-                                ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 72, 126, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                component_txt.setText(ssb);
-                                utlani13.stop();
-                                u_tleft_line13.setBackgroundResource(R.drawable.line9finish);
-                                u_tleft_line1.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani1 = (AnimationDrawable) u_tleft_line1.getBackground();
-                                utlani1.start();
-                                u_tleft_txt1.setText("DONE");
-                                u_tleft_txt1.setTextColor(Color.parseColor("#9E0958"));
-                            }
-                            if (count_ul == 8) {
-                                utlani1.stop();
-                                u_tleft_line1.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line2.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani2 = (AnimationDrawable) u_tleft_line2.getBackground();
-                                utlani2.start();
-                                u_tleft_txt2.setText("6 left");
-                            }
-                            if (count_ul == 9) {
-                                utlani2.stop();
-                                u_tleft_line2.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line3.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani3 = (AnimationDrawable) u_tleft_line3.getBackground();
-                                utlani3.start();
-                                u_tleft_txt2.setText("5 left");
-                            }
-                            if (count_ul == 10) {
-                                utlani3.stop();
-                                u_tleft_line3.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line4.setBackgroundResource(R.drawable.underleftmiddle2);
-                                utlani4 = (AnimationDrawable) u_tleft_line4.getBackground();
-                                utlani4.start();
-                                u_tleft_txt2.setText("4 left");
-                            }
-                            if (count_ul == 11) {
-                                utlani4.stop();
-                                u_tleft_line4.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line5.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani5 = (AnimationDrawable) u_tleft_line5.getBackground();
-                                utlani5.start();
-                                u_tleft_txt2.setText("3 left");
-                            }
-                            if (count_ul == 12) {
-                                utlani5.stop();
-                                u_tleft_line5.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line6.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani6 = (AnimationDrawable) u_tleft_line6.getBackground();
-                                utlani6.start();
-                                u_tleft_txt2.setText("2 left");
-                            }
-                            if (count_ul == 13) {
-                                utlani6.stop();
-                                u_tleft_line6.setBackgroundResource(R.drawable.line5finish);
-                                u_tleft_line7.setBackgroundResource(R.drawable.underleftanim2);
-                                utlani7 = (AnimationDrawable) u_tleft_line7.getBackground();
-                                utlani7.start();
-                                u_tleft_txt2.setText("1 left");
-                            } if (count_ul >= 14) {
-                                u_tleft_line7.setBackgroundResource(R.drawable.line5finish);
-                                component_txt.setText("GOOD JOB");
-                                u_tleft_txt2.setText("DONE");
-                                u_tleft_txt2.setTextColor(Color.parseColor("#9E0958"));
-                                data=25;
-                                underleftstring="true";
-                            }
-                            if(count_ul==15){
+                        if (count_ul == 1) {
+                            String str = "THIS COLUMN HAS 6 LINES.\nPLACE THE DEVICE TO THE COLORED LINE AS\nSHOWN. AND PRESS THE CENTER BUTTON TO\nSTART TREATING ONE LINE";
+                            SpannableStringBuilder ssb = new SpannableStringBuilder(str);
+                            ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 72, 126, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            component_txt.setText(ssb);
+                            u_tleft_line8.setBackgroundResource(R.drawable.underleftanim1);
+                            utlani8 = (AnimationDrawable) u_tleft_line8.getBackground();
+                            utlani8.start();
+                        }
+                        if (count_ul == 2) {
+                            utlani8.stop();
+                            u_tleft_line8.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line9.setBackgroundResource(R.drawable.underleftanim1);
+                            utlani9 = (AnimationDrawable) u_tleft_line9.getBackground();
+                            utlani9.start();
+                            u_tleft_txt1.setText("5 left");
+                        }
+                        if (count_ul == 3) {
+                            utlani9.stop();
+                            u_tleft_line9.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line10.setBackgroundResource(R.drawable.underleftanim1);
+                            utlani10 = (AnimationDrawable) u_tleft_line10.getBackground();
+                            utlani10.start();
+                            u_tleft_txt1.setText("4 left");
+                        }
+                        if (count_ul == 4) {
+                            utlani10.stop();
+                            u_tleft_line10.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line11.setBackgroundResource(R.drawable.underleftmiddle1);
+                            utlani11 = (AnimationDrawable) u_tleft_line11.getBackground();
+                            utlani11.start();
+                            u_tleft_txt1.setText("3 left");
+                        }
+                        if (count_ul == 5) {
+                            utlani11.stop();
+                            u_tleft_line11.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line12.setBackgroundResource(R.drawable.underleftanim1);
+                            utlani12 = (AnimationDrawable) u_tleft_line12.getBackground();
+                            utlani12.start();
+                            u_tleft_txt1.setText("2 left");
+                        }
+                        if (count_ul == 6) {
+                            utlani12.stop();
+                            u_tleft_line12.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line13.setBackgroundResource(R.drawable.underleftanim1);
+                            utlani13 = (AnimationDrawable) u_tleft_line13.getBackground();
+                            utlani13.start();
+                            u_tleft_txt1.setText("1 left");
+                        }
+                        if (count_ul == 7) {
+                            String str = "THIS COLUMN HAS 7 LINES.\nPLACE THE DEVICE TO THE COLORED LINE AS\nSHOWN. AND PRESS THE CENTER BUTTON TO\nSTART TREATING ONE LINE";
+                            SpannableStringBuilder ssb = new SpannableStringBuilder(str);
+                            ssb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 72, 126, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            component_txt.setText(ssb);
+                            utlani13.stop();
+                            u_tleft_line13.setBackgroundResource(R.drawable.line9finish);
+                            u_tleft_line1.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani1 = (AnimationDrawable) u_tleft_line1.getBackground();
+                            utlani1.start();
+                            u_tleft_txt1.setText("DONE");
+                            u_tleft_txt1.setTextColor(Color.parseColor("#9E0958"));
+                        }
+                        if (count_ul == 8) {
+                            utlani1.stop();
+                            u_tleft_line1.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line2.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani2 = (AnimationDrawable) u_tleft_line2.getBackground();
+                            utlani2.start();
+                            u_tleft_txt2.setText("6 left");
+                        }
+                        if (count_ul == 9) {
+                            utlani2.stop();
+                            u_tleft_line2.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line3.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani3 = (AnimationDrawable) u_tleft_line3.getBackground();
+                            utlani3.start();
+                            u_tleft_txt2.setText("5 left");
+                        }
+                        if (count_ul == 10) {
+                            utlani3.stop();
+                            u_tleft_line3.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line4.setBackgroundResource(R.drawable.underleftmiddle2);
+                            utlani4 = (AnimationDrawable) u_tleft_line4.getBackground();
+                            utlani4.start();
+                            u_tleft_txt2.setText("4 left");
+                        }
+                        if (count_ul == 11) {
+                            utlani4.stop();
+                            u_tleft_line4.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line5.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani5 = (AnimationDrawable) u_tleft_line5.getBackground();
+                            utlani5.start();
+                            u_tleft_txt2.setText("3 left");
+                        }
+                        if (count_ul == 12) {
+                            utlani5.stop();
+                            u_tleft_line5.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line6.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani6 = (AnimationDrawable) u_tleft_line6.getBackground();
+                            utlani6.start();
+                            u_tleft_txt2.setText("2 left");
+                        }
+                        if (count_ul == 13) {
+                            utlani6.stop();
+                            u_tleft_line6.setBackgroundResource(R.drawable.line5finish);
+                            u_tleft_line7.setBackgroundResource(R.drawable.underleftanim2);
+                            utlani7 = (AnimationDrawable) u_tleft_line7.getBackground();
+                            utlani7.start();
+                            u_tleft_txt2.setText("1 left");
+                        } if (count_ul >= 14) {
+                            u_tleft_line7.setBackgroundResource(R.drawable.line5finish);
+                            component_txt.setText("GOOD JOB");
+                            u_tleft_txt2.setText("DONE");
+                            u_tleft_txt2.setTextColor(Color.parseColor("#9E0958"));
+                            data=25;
+                            underleftstring="true";
+                        }
+                        if(count_ul==15){
+                            second.cancel();
+                            getDataTreat();
+                            GetData task = new GetData();
+                            task.execute("http://"+IP_Address+"/callingTreathome.php", "");
 
-                                getDataTreat();
-                                GetData task = new GetData();
-                                task.execute("http://"+IP_Address+"/callingTreathome.php", "");
-
-                                Log.e("underleft", "save");
-                                if (! TreatActivity_underleft2.this.isFinishing()) {
-                                    Intent intent = new Intent(getApplicationContext(),DoneActivity.class);
-                                    intent.putExtra("stringlist","underleft");
-                                    startActivity(intent);
-                                    new Handler().postDelayed(new Runnable()
+                            Log.e("underleft", "save");
+                            if (! TreatActivity_underleft2.this.isFinishing()) {
+                                Intent intent = new Intent(getApplicationContext(),DoneActivity.class);
+                                intent.putExtra("stringlist","underleft");
+                                startActivity(intent);
+                                new Handler().postDelayed(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
                                     {
-                                        @Override
-                                        public void run()
-                                        {
-                                            screenshot();
-                                        }
-                                    }, 20);
-                                }
+                                        screenshot();
+                                    }
+                                }, 20);
                             }
+                        }
 
                     }
                 });
             }
         };
         Timer timer = new Timer();
-        timer.schedule(second, 0, 1000);
+        timer.schedule(second, 0, 1);
     }
 
     private void getDataTreat() {
@@ -494,9 +495,9 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
         animation();
     }
 
-    public void onStop() {
-        super.onStop();
-        count_ul = 500;
+    public void onPause() {
+        super.onPause();
+        second.cancel();
     }
 
     public void screenshot(){
