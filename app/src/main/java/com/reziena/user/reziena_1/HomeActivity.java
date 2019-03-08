@@ -238,30 +238,35 @@ public class HomeActivity extends AppCompatActivity {
 
         Intent subintent = getIntent();
 
-        dialogstring = subintent.getExtras().getString("name");
-        finish = subintent.getExtras().getString("signin");
+        if(subintent.getExtras()!=null) {
 
-        if(finish!=null){
-            if(finish.equals("finish")){
-                signin2.finish();
+            dialogstring = subintent.getExtras().getString("name");
+            finish = subintent.getExtras().getString("signin");
+
+            if (finish != null) {
+                if (finish.equals("finish")) {
+                    signin2.finish();
+                }
             }
-        }
 
-
-        if(dialogstring!=null){
-            if(dialogstring.equals("skintypedialog")){
-                final Intent intent = new Intent(getApplicationContext(),SkintypeAsk.class);
-                startActivity(intent);
-                new Handler().postDelayed(new Runnable()
-                {
-                    @Override
-                    public void run()
+            if(dialogstring!=null){
+                if(dialogstring.equals("skintypedialog")){
+                    final Intent intent = new Intent(getApplicationContext(),SkintypeAsk.class);
+                    startActivity(intent);
+                    new Handler().postDelayed(new Runnable()
                     {
-                        screenshot();
-                    }
-                }, 100);
+                        @Override
+                        public void run()
+                        {
+                            screenshot();
+                        }
+                    }, 100);
+                }
             }
         }
+
+
+
 
         //animation
         final Animation alpha = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_alpha);
