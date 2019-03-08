@@ -117,16 +117,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         accessToken = AccessToken.getCurrentAccessToken();
 
         Intent subintent = getIntent();
+        if (subintent!=null) {
 
-        finish = subintent.getExtras().getString("finish");
 
-        if(finish!=null){
-            if(finish.equals("finish")){
-                homeActivity.finish();
+            finish = subintent.getExtras().getString("finish");
+
+            if(finish!=null) {
+                if (finish.equals("finish")) {
+                    homeActivity.finish();
+                }
             }
         }
-
-
 
         Log.e("start", "login");
         SharedPreferences userName = getSharedPreferences("userName", MODE_PRIVATE);
