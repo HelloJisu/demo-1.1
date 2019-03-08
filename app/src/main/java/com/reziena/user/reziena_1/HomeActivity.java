@@ -237,36 +237,31 @@ public class HomeActivity extends AppCompatActivity {
         bottomSheetBehavior.setHideable(false);
 
         Intent subintent = getIntent();
-        if (subintent!=null) {
-            dialogstring = subintent.getExtras().getString("name");
-            finish = subintent.getExtras().getString("signin");
 
-            if(dialogstring!=null){
-                if(dialogstring.equals("skintypedialog")){
-                    final Intent intent = new Intent(getApplicationContext(),SkintypeAsk.class);
-                    startActivity(intent);
-                    new Handler().postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            screenshot();
-                        }
-                    }, 100);
-                }
+        dialogstring = subintent.getExtras().getString("name");
+        finish = subintent.getExtras().getString("signin");
+
+        if(finish!=null){
+            if(finish.equals("finish")){
+                signin2.finish();
             }
-
-            if(finish!=null){
-                if(finish.equals("finish")){
-                    signin2.finish();
-                }
-            }
-
         }
 
 
-
-
+        if(dialogstring!=null){
+            if(dialogstring.equals("skintypedialog")){
+                final Intent intent = new Intent(getApplicationContext(),SkintypeAsk.class);
+                startActivity(intent);
+                new Handler().postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        screenshot();
+                    }
+                }, 100);
+            }
+        }
 
         //animation
         final Animation alpha = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_alpha);

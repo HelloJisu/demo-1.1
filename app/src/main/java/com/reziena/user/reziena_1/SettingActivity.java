@@ -87,6 +87,7 @@ public class SettingActivity extends AppCompatActivity {
                         editor8.commit();
                         editor9.commit();
                         Log.e("remove", "yeal~!"); //하기실어
+
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         intent.putExtra("finish","finish");
                         startActivity(intent);
