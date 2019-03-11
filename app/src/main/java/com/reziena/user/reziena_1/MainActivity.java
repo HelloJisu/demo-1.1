@@ -160,13 +160,9 @@ public class MainActivity extends AppCompatActivity {
                 String imagePath = (Environment.getExternalStorageDirectory()+"/pic.jpg").toString();
                 img_input = new Mat();
                 img_output = new Mat();
-
-                HomeActivity.send("wrinkle->start");
-
                 Intent intent = new Intent(getApplicationContext(), WrinkleResultActivity.class);
                 overridePendingTransition(0,0);
                 startActivity(intent);
-
                 //loadImage(imagePath, img_input.getNativeObjAddr(), cascadeClassifier_face);
             }
         });

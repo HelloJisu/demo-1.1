@@ -1,21 +1,21 @@
 package com.reziena.user.reziena_1;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.SystemClock;
+import android.net.*;
+import android.os.*;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Display;
@@ -35,10 +35,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import android.util.Base64;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
+import com.bumptech.glide.*;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.apache.http.*;
+import org.apache.http.client.*;
+import org.apache.http.client.entity.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.impl.client.*;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -56,7 +63,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import java.io.*;
+import java.net.*;
+import java.net.URLEncoder;
+import java.util.*;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static java.net.Authenticator.RequestorType.SERVER;
 
 public class Signin2Activity extends AppCompatActivity {
     TextView okay;
@@ -81,6 +95,11 @@ public class Signin2Activity extends AppCompatActivity {
     private static final String DEFAULT_LOCAL = "Portugal";
     public int yearint, dayint, monthint;
     Drawable alphasignin;
+    int serverResponseCode = 0;
+    private static final int REQUEST_STORAGE = 1;
+    String nameP, pathP;
+
+    Bitmap photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +108,8 @@ public class Signin2Activity extends AppCompatActivity {
         signin2 = Signin2Activity.this;
 
         Intent subintent = getIntent();
+
+
 
         namestring = subintent.getExtras().getString("name");
         idstring = subintent.getExtras().getString("id");
@@ -238,7 +259,7 @@ public class Signin2Activity extends AppCompatActivity {
         }
 
         if(profileurl==null){
-            profile.setImageResource(R.drawable.profile_main);
+            profile.setImageResource(R.drawable.no_profile);
         }
 
         if(profileurl!=null){
@@ -264,6 +285,31 @@ public class Signin2Activity extends AppCompatActivity {
                         }
                         String saveName = name.getText().toString();
                         String birth = yearint+"/"+monthint+"/"+dayint;
+
+                        nameP = getName(mImageCaptureUri);
+                        pathP = getPath(mImageCaptureUri);
+                        Log.e("nameP==", nameP);
+                        Log.e("pathP==", pathP);
+                        Long tsLong = System.currentTimeMillis() / 1000;
+                        profileurl = "/uploads/"+"IMG_" + tsLong.toString()+".JPEG";
+
+                        SharedPreferences sp_userName = getSharedPreferences("userName", MODE_PRIVATE);
+                        SharedPreferences sp_userID = getSharedPreferences("userID", MODE_PRIVATE);
+                        SharedPreferences.Editor editor1 = sp_userName.edit();
+                        SharedPreferences.Editor editor2 = sp_userID.edit();
+                        editor1.putString("userName", saveName);
+                        editor2.putString("userID", idstring);
+                        editor1.commit();
+                        editor2.commit();
+                        Log.e("Login ", saveName+"님 로그인");
+                        Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                        intent.putExtra("name","skintypedialog");
+                        intent.putExtra("signin","finish");
+                        startActivity(intent);
+                        finish();
+
+                        uploadProfile up = new uploadProfile();
+                        up.execute(mImageCaptureUri.getPath());
                         setData task = new setData();
                         task.execute("http://"+ HomeActivity.IP_Address +"/saveUser.php", idstring, password, saveName, genderstring, birth, profileurl, countrystring);
                         break;
@@ -316,7 +362,7 @@ public class Signin2Activity extends AppCompatActivity {
 
                 HttpURLConnection httpURLConnection= (HttpURLConnection)url.openConnection();
                 httpURLConnection.setReadTimeout(5000);
-                httpURLConnection.setConnectTimeout(5000);;
+                httpURLConnection.setConnectTimeout(5000);
 
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.connect();
@@ -403,7 +449,7 @@ public class Signin2Activity extends AppCompatActivity {
         {
             case PICK_FROM_ALBUM: {
                 mImageCaptureUri = data.getData();
-                Log.d("SmartWheel", mImageCaptureUri.getPath().toString());
+                Log.e("SmartWheel", mImageCaptureUri.getPath().toString());
             }
             case PICK_FROM_CAMERA:{
                 Intent intent = new Intent("com.android.camera.action.CROP");
@@ -437,10 +483,99 @@ public class Signin2Activity extends AppCompatActivity {
                     absolutePath = filePath;
                     break;
                 }
-                File f = new File(mImageCaptureUri.getPath());
-                if(f.exists()){
-                    f.delete();
+            }
+        }
+    } // end of onActivityResult
+
+    private String hashMapToUrl(HashMap<String, String> params) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for(Map.Entry<String, String> entry : params.entrySet()){
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+        return result.toString();
+    }
+
+    class uploadProfile extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPostExecute(String getResult) {
+            super.onPostExecute(getResult);
+            //profileurl = getResult;
+            Log.e("getResult==", getResult);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String upLoadServerUri = "http://52.32.36.182/saveProfile.php";//서버컴퓨터의 ip주소
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            String encodeImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+            HashMap<String,String> detail = new HashMap<>();
+            detail.put("name", profileurl);
+            detail.put("image", encodeImage);
+
+            try {
+                String dataToSend = hashMapToUrl(detail);
+
+                URL url = new URL(upLoadServerUri);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                //set timeout of 30 seconds
+                con.setConnectTimeout(1000 * 30);
+                con.setReadTimeout(1000 * 30);
+                //method
+                con.setRequestMethod("POST");
+                con.setDoOutput(true);
+
+                OutputStream os = con.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os,"UTF-8"));
+
+                //make request
+                writer.write(dataToSend);
+                writer.flush();
+                writer.close();
+                os.close();
+
+                //get the response
+                int responseCode = con.getResponseCode();
+
+                if(responseCode == HttpURLConnection.HTTP_OK) {
+                    Log.e("File Upload Completed", "근데 왜 안돼냐 싀바" );
+                    //read the response
+                    StringBuilder sb = new StringBuilder();
+
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String line;
+
+                    //loop through the response from the server
+                    while ((line = reader.readLine()) != null){
+                        sb.append(line).append("\n");
+                    }
+
+                    //return the response
+                    return sb.toString();
+                }else {
+                    Log.e("","ERROR - Invalid response code from server "+ responseCode);
+                    return null;
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("","ERROR "+e);
+                return null;
             }
         }
     }
@@ -468,6 +603,46 @@ public class Signin2Activity extends AppCompatActivity {
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void checkPermissions() {
+
+        int permissionCheck1 = ContextCompat.checkSelfPermission(this , WRITE_EXTERNAL_STORAGE);
+        if(permissionCheck1 == PackageManager.PERMISSION_GRANTED) Log.e("퍼미션", "WRITE_EXTERNAL_STORAGE granted!");
+        else {
+            Log.e("퍼미션", "WRITE_EXTERNAL_STORAGE not granted!");
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_STORAGE) {
+            if(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e("퍼미션", "WRITE_EXTERNAL_STORAGE granted!");
+            } else {
+                Log.e("퍼미션", "WRITE_EXTERNAL_STORAGE 삭제하지말라고!!");
+            }
+        }
+    }
+
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(columnIndex);
+    }
+
+    // 파일명 찾기
+    private String getName(Uri uri)
+    {
+        String[] projection = { MediaStore.Images.ImageColumns.DISPLAY_NAME };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        int column_index = 		cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DISPLAY_NAME);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
     public void onResume() {

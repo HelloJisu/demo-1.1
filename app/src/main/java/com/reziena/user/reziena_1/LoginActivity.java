@@ -107,6 +107,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     Drawable alphasignin;
     String finish;
 
+    public static final String CONNECTION_CONFIRM_CLIENT_URL = "http://clients3.google.com/generate_204";
+    private static boolean success;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,13 +132,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     }
                 }
 
+        // 인터넷 연결 확인
+        isOnline();
+        Log.e("success?", String.valueOf(success));
         Log.e("start", "login");
-        SharedPreferences userName = getSharedPreferences("userName", MODE_PRIVATE);
-        String name = userName.getString("userName", "userName=none");
-        Log.e("userName", name);
-        if (!name.equals("userName=none")) {
-            Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
-            startActivity(intent);
+        if (!success) {
+            // 인터넷 연결이 안됨 팝업
+        } else {
+            SharedPreferences userName = getSharedPreferences("userName", MODE_PRIVATE);
+            String name = userName.getString("userName", "userName=none");
+            Log.e("userName", name);
+            if (!name.equals("userName=none")) {
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(intent);
+            }
         }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -185,6 +194,48 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btn_login.setOnClickListener(this);
     }
 
+    private static class CheckConnect extends Thread {
+        private String host;
+
+        public CheckConnect(String host) {
+            this.host = host;
+        }
+
+        @Override
+        public void run() {
+
+            HttpURLConnection conn = null;
+            try {
+                conn = (HttpURLConnection) new URL(host).openConnection();
+                conn.setRequestProperty("User-Agent", "Android");
+                conn.setConnectTimeout(1000);
+                conn.connect();
+                int responseCode = conn.getResponseCode();
+                if (responseCode == 204) success = true;
+                else success = false;
+            } catch (Exception e) {
+                e.printStackTrace();
+                success = false;
+            }
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        public boolean isSuccess(){
+            return success;
+        }
+    }
+    public static boolean isOnline() {
+        CheckConnect cc = new CheckConnect(CONNECTION_CONFIRM_CLIENT_URL);
+        cc.start();
+        try{
+            cc.join();
+            return cc.isSuccess();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     public void login() {
         isprofile = appPreferences.getString(AppPreferences.PROFILE_PIC); //인스타그램 프로필
