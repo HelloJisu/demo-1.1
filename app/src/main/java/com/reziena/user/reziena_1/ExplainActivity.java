@@ -15,7 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class ExplainActivity extends AppCompatActivity {
-    TextView okay;
+    TextView okay, txtpop;
     int a=0;
     ImageView popup,e1,e2,e3,e4;
     public static Activity explainactivity;
@@ -25,6 +25,7 @@ public class ExplainActivity extends AppCompatActivity {
     TreatActivity_underright treatunderright = (TreatActivity_underright) TreatActivity_underright.treatunderright;
     TreatActivity_cheekright treatcheekright = (TreatActivity_cheekright) TreatActivity_cheekright.treatcheekright;
     TreatActivity_cheekleft treatcheekleft = (TreatActivity_cheekleft) TreatActivity_cheekleft.treatcheekleft;
+    TreatActivity treatActivity = (TreatActivity) TreatActivity.treatactivity;
 
 
     @Override
@@ -54,6 +55,7 @@ public class ExplainActivity extends AppCompatActivity {
         e2 = findViewById(R.id.guide2);
         e3 = findViewById(R.id.guide3);
         e4 = findViewById(R.id.guide4);
+        txtpop = findViewById(R.id.textpop);
 
         View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
@@ -65,6 +67,7 @@ public class ExplainActivity extends AppCompatActivity {
                         treatcheekright.back.setImageResource(0);
                         treatunderright.back.setImageResource(0);
                         treatunderleft.back.setImageResource(0);
+                        treatActivity.back.setImageResource(0);
                         finish();
                         break;
                     case R.id.guideimg:
@@ -74,6 +77,7 @@ public class ExplainActivity extends AppCompatActivity {
                         a++;
                         Log.e("야야야",String.valueOf(a));
                         if(a==0){
+                            txtpop.setText("Press tne button once\nto change the level.");
                             popup.setImageResource(R.drawable.guide1);
                             e1.setImageResource(R.drawable.gellipse1);
                             e2.setImageResource(R.drawable.gellipse2);
@@ -81,6 +85,7 @@ public class ExplainActivity extends AppCompatActivity {
                             e4.setImageResource(R.drawable.gellipse2);
                         }
                        if(a==1){
+                            txtpop.setText("Press the button while touching\nthe skin to perform a single care.");
                            popup.setImageResource(R.drawable.guide2);
                            e1.setImageResource(R.drawable.gellipse2);
                            e2.setImageResource(R.drawable.gellipse1);
@@ -88,6 +93,7 @@ public class ExplainActivity extends AppCompatActivity {
                            e4.setImageResource(R.drawable.gellipse2);
                        }
                         if(a==2){
+                            txtpop.setText("Follow the care guide and\nmove a little bit to treat each zone.");
                             popup.setImageResource(R.drawable.guide3);
                             e1.setImageResource(R.drawable.gellipse2);
                             e2.setImageResource(R.drawable.gellipse2);
@@ -95,6 +101,7 @@ public class ExplainActivity extends AppCompatActivity {
                             e4.setImageResource(R.drawable.gellipse2);
                         }
                         if(a==3){
+                            txtpop.setText("Give your skin a rest\nby treating only one area a day.");
                             popup.setImageResource(R.drawable.guide4);
                             e1.setImageResource(R.drawable.gellipse2);
                             e2.setImageResource(R.drawable.gellipse2);
@@ -125,5 +132,6 @@ public class ExplainActivity extends AppCompatActivity {
         treatcheekright.back.setImageResource(0);
         treatunderright.back.setImageResource(0);
         treatunderleft.back.setImageResource(0);
+        treatActivity.back.setImageResource(0);
     }
 }

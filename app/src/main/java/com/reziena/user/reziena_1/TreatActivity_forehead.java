@@ -131,19 +131,9 @@ public class TreatActivity_forehead extends AppCompatActivity {
             finish();
             break;
 
-          case R.id.underright_f:
-            HomeActivity.send("uneye_r->start");
-            intent = new Intent(getBaseContext(), TreatActivity_underright2.class);
+          case R.id.forehead_f:
+            intent = new Intent(getBaseContext(), TreatActivity_foreheadright.class);
             startActivity(intent);
-            overridePendingTransition(0, 0);
-            finish();
-            break;
-
-          case R.id.underleft_f:
-            HomeActivity.send("uneye_l->start");
-            intent = new Intent(getBaseContext(), TreatActivity_underleft2.class);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
             finish();
             break;
 
@@ -168,6 +158,7 @@ public class TreatActivity_forehead extends AppCompatActivity {
         }
       }
     };
+    forehead.setOnClickListener(onClickListener);
     question.setOnClickListener(onClickListener);
     underright.setOnClickListener(onClickListener);
     back.setOnClickListener(onClickListener);
