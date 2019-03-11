@@ -80,7 +80,7 @@
                         android:layout_weight="0.08"/>
 
                     <ImageView
-                        android:id="@+id/back_treat"
+                        android:id="@+id/question_cl"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.08"
@@ -313,6 +313,12 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 
 

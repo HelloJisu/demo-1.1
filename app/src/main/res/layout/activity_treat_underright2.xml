@@ -80,7 +80,7 @@
                         android:layout_weight="0.08"/>
 
                     <ImageView
-                        android:id="@+id/back_treat"
+                        android:id="@+id/question_ur2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.08"

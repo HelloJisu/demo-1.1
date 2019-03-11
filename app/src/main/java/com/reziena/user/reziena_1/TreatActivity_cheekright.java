@@ -12,11 +12,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.renderscript.RenderScript;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reziena.user.reziena_1.utils.RSBlurProcessor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,7 +52,11 @@ import java.util.TimerTask;
 public class TreatActivity_cheekright extends AppCompatActivity {
 
   String treatResult="";
-
+  RenderScript rs;
+  Bitmap blurBitMap;
+  Animation alphaback;
+  private long mLastClickTime = 0;
+  private static Bitmap bitamp;
   ImageView forehead, underleft, underright, eyeleft, eyeright, cheekl, cheekr, mouth, back;
   LinearLayout component;
   String underrightstring,underleftstring,cheekrightstring,cheekleftstring;
@@ -64,7 +71,7 @@ public class TreatActivity_cheekright extends AppCompatActivity {
           ,c_tright_line9,c_tright_line10,c_tright_line11,c_tright_line12,c_tright_line13,c_tright_line14,c_tright_line15,c_tright_line16,c_tright_line17
           ,c_tright_line18,c_tright_line19,c_tright_line20,c_tright_line21,c_tright_line22,c_tleft_line1,c_tleft_line2,c_tleft_line3,c_tleft_line4,c_tleft_line5,c_tleft_line6,c_tleft_line7,c_tleft_line8
           ,c_tleft_line9,c_tleft_line10,c_tleft_line11,c_tleft_line12,c_tleft_line13,c_tleft_line14,c_tleft_line15,c_tleft_line16,c_tleft_line17
-          ,c_tleft_line18,c_tleft_line19,c_tleft_line20,c_tleft_line21,c_tleft_line22;
+          ,c_tleft_line18,c_tleft_line19,c_tleft_line20,c_tleft_line21,c_tleft_line22,backgroundimg;
   TimerTask second;
   String part,wrinkle_string;
   public static Activity treatcheekright;
@@ -99,6 +106,7 @@ public class TreatActivity_cheekright extends AppCompatActivity {
     final Drawable  cheekunderleftimg= res.getDrawable(R.drawable.cheekunderleft);
     //값 받아오기
 
+    backgroundimg=findViewById(R.id.background);
     content1 = findViewById(R.id.treatup_cr);
     content2 = findViewById(R.id.treatdown_cr);
     forehead =  (ImageView)findViewById(R.id.forehead_cr);
@@ -130,6 +138,14 @@ public class TreatActivity_cheekright extends AppCompatActivity {
             finish();
             break;
 
+          case R.id.cheek_left_cr:
+            HomeActivity.send("cheek_l->start");
+            intent = new Intent(getBaseContext(), TreatActivity_cheekleft2.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            break;
+
           case R.id.cheek_right_cr:
             HomeActivity.send("cheek_r->start");
             intent = new Intent(getBaseContext(), TreatActivity_cheekright2.class);
@@ -140,6 +156,7 @@ public class TreatActivity_cheekright extends AppCompatActivity {
         }
       }
     };
+    cheekl.setOnClickListener(onClickListener);
     back.setOnClickListener(onClickListener);
     cheekr.setOnClickListener(onClickListener);
   }
@@ -434,6 +451,17 @@ public class TreatActivity_cheekright extends AppCompatActivity {
       }
 
     }
+  }
+
+  public void screenshot(){
+    rs = RenderScript.create(this);
+    View view=getWindow().getDecorView();
+    view.setDrawingCacheEnabled(false);
+    view.setDrawingCacheEnabled(true);
+    bitamp = view.getDrawingCache();
+    RSBlurProcessor rsBlurProcessor = new RSBlurProcessor(rs);
+    blurBitMap = rsBlurProcessor.blur(bitamp, 20f, 3);
+    backgroundimg.setImageBitmap(blurBitMap);
   }
 
   private void checkResult() {

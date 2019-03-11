@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/treatup_ur"
+                android:id="@+id/treatup_er"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="460"
@@ -42,7 +42,7 @@
                 android:layout_weight="1970"/>
 
             <ImageView
-                android:id="@+id/treatdown_ur"
+                android:id="@+id/treatdown_er"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="570"
@@ -80,7 +80,7 @@
                         android:layout_weight="0.08"/>
 
                     <ImageView
-                        android:id="@+id/back_treat"
+                        android:id="@+id/question_e"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.08"
@@ -311,6 +311,12 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
 
 

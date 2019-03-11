@@ -73,7 +73,7 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
     int undercount=0, data=0, level=0, timer_sec;
     public static int count_ul=0;
     ImageView u_tleft_line1,u_tleft_line2,u_tleft_line3,u_tleft_line4,u_tleft_line5,u_tleft_line6,
-            u_tleft_line7,u_tleft_line8,u_tleft_line9,u_tleft_line10,u_tleft_line11,u_tleft_line12,u_tleft_line13;
+            u_tleft_line7,u_tleft_line8,u_tleft_line9,u_tleft_line10,u_tleft_line11,u_tleft_line12,u_tleft_line13, question;
     TimerTask second;
     String part;
     AnimationDrawable utlani1,utlani2,utlani3,utlani4,utlani5,utlani6,utlani7,utlani8,utlani9,utlani10,utlani11,utlani12,utlani13;
@@ -467,6 +467,7 @@ public class TreatActivity_underleft2 extends AppCompatActivity {
         //값 받아오기
         content1 = findViewById(R.id.treatup_ul2);
         content2 = findViewById(R.id.treatdown_ul2);
+        question = findViewById(R.id.question_ul2);
         u_tleft_line1=(ImageView)findViewById(R.id.u_tleft_line1);
         u_tleft_line2=(ImageView)findViewById(R.id.u_tleft_line2);
         u_tleft_line3=(ImageView)findViewById(R.id.u_tleft_line3);

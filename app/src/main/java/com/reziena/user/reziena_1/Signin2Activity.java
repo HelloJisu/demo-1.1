@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListPopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -46,6 +47,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -104,14 +106,32 @@ public class Signin2Activity extends AppCompatActivity {
         for(int i=0;i<100;i++){
             yearAdapter.add(year--);
         }
-        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,yearAdapter);
+        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, R.layout.support_simple_spinner_dropdown_item,yearAdapter);
         birthday_year.setAdapter(arrayAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_year);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner birthday_month = findViewById(R.id.birthday_month);
         ArrayAdapter monthAdapter = ArrayAdapter.createFromResource(this,
                 R.array.birthday_month, R.layout.spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         birthday_month.setAdapter(monthAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_month);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner birthday_day = findViewById(R.id.birthday_day);
         ArrayList<Integer> birthAdapter = new ArrayList<>();
@@ -120,12 +140,30 @@ public class Signin2Activity extends AppCompatActivity {
         }
         ArrayAdapter<Integer> birthdayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,birthAdapter);
         birthday_day.setAdapter(birthdayAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_day);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner couuntry = findViewById(R.id.country);
         ArrayAdapter countryarray = ArrayAdapter.createFromResource(this,
                 R.array.country, R.layout.spinner_item);
         countryarray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         couuntry.setAdapter(countryarray);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(couuntry);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner gender = findViewById(R.id.gender);
         ArrayAdapter genderAdapter = ArrayAdapter.createFromResource(this,

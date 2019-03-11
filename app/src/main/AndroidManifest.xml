@@ -43,6 +43,8 @@
         <activity android:name=".Signin2Activity"/>
         <activity android:name=".SkintypeAsk" android:theme="@style/NoTitleDialog" />
         <activity android:name=".TreatActivity_cheekleft" />
+        <activity android:name=".TreatActivity_eye" />
+        <activity android:name=".TreatActivity_forehead" />
         <activity android:name=".TreatActivity_cheekright" />
         <activity android:name=".TreatActivity_underleft" />
         <activity android:name=".TreatActivity_underright" />
@@ -52,6 +54,14 @@
             android:noHistory="true"/>
         <activity android:name=".TreatActivity_underleft2"
             android:noHistory="true"/>
+        <activity android:name=".TreatActivity_foreheadright"
+            android:noHistory="true"/>
+        <activity android:name=".TreatActivity_foreheadleft"
+            android:noHistory="true"/>
+        <activity android:name=".TreatActivity_eyerleft2"
+            android:noHistory="true"/>
+        <activity android:name=".TreatActivity_eyeright2"
+            android:noHistory="true"/>
         <activity android:name=".TreatActivity_underright2" android:noHistory="true"/>
         <activity android:name=".LoadingActivity"/>
         <activity android:name=".HomeActivity"/>
@@ -60,6 +70,9 @@
         <activity android:name=".LoginmainActivity"/>
         <activity
             android:name=".MoistureActivity"
+            android:theme="@style/NoTitleDialog" />
+        <activity
+            android:name=".ExplainActivity"
             android:theme="@style/NoTitleDialog" />
         <activity
             android:name=".BluetoothActivity"

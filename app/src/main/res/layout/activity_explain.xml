@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    tools:context=".SkinhistoryActivity">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="350dp"
+        android:layout_margin="20dp"
+        android:background="#FAFAFA">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guide"
+            android:textFontWeight="500"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#180018"
+            app:fontFamily="@font/roboto"/>
+
+        <ImageView
+            android:id="@+id/guideimg"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:src="@drawable/guide1"
+            android:text="Setting page"
+            android:textSize="15dp"
+            android:textColor="#180018"
+            app:fontFamily="@font/roboto"/>
+
+        <ImageView
+            android:id="@+id/guide1"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/guideimg"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="137dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="85dp"
+            android:src="@drawable/gellipse2" />
+
+        <ImageView
+            android:id="@+id/guide2"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/guideimg"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="85dp"
+            android:layout_toEndOf="@+id/guide1"
+            android:src="@drawable/gellipse1" />
+
+        <ImageView
+            android:id="@+id/guide3"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/guideimg"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="85dp"
+            android:layout_toEndOf="@+id/guide2"
+            android:src="@drawable/gellipse1" />
+
+        <ImageView
+            android:id="@+id/guide4"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_below="@+id/guideimg"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="85dp"
+            android:layout_toEndOf="@+id/guide3"
+            android:src="@drawable/gellipse1" />
+
+        <TextView
+            android:id="@+id/textpop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="36dp"
+            android:gravity="center"
+            android:text="Press tne button once\nto change the level."
+            android:textColor="#000000"
+            android:textSize="15dp" />
+
+
+        <!-- okay -->
+        <TextView
+            android:id="@+id/okay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:textFontWeight="500"
+            android:textSize="15dp"
+            android:text="Got it"
+            android:textColor="#9E0958"
+            app:fontFamily="@font/roboto"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

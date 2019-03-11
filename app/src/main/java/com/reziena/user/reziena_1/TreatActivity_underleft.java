@@ -69,7 +69,7 @@ public class TreatActivity_underleft extends AppCompatActivity {
   String part,wrinkle_string;
   public static Activity treatactivity;
   public static Activity treatunderleft;
-  ImageView content1, content2;
+  ImageView content1, content2, question;
   Intent home;
   int wrinkleresult;
 
@@ -99,7 +99,7 @@ public class TreatActivity_underleft extends AppCompatActivity {
     final Drawable  cheekunderrightimg= res.getDrawable(R.drawable.cheekunderimg);
     final Drawable  cheekunderleftimg= res.getDrawable(R.drawable.cheekunderleft);
     //값 받아오기
-
+    question = findViewById(R.id.question_ul);
     forehead =  (ImageView)findViewById(R.id.forehead_ul);
     underleft =  (ImageView)findViewById(R.id.underleft_ul);
     underright =  (ImageView)findViewById(R.id.underright_ul);
@@ -128,6 +128,14 @@ public class TreatActivity_underleft extends AppCompatActivity {
             finish();
             break;
 
+          case R.id.underright_ul:
+            HomeActivity.send("uneye_r->start");
+            intent = new Intent(getBaseContext(), TreatActivity_underright2.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+            finish();
+            break;
+
           case R.id.underleft_ul:
             HomeActivity.send("uneye_l->start");
             intent = new Intent(getBaseContext(), TreatActivity_underleft2.class);
@@ -138,6 +146,7 @@ public class TreatActivity_underleft extends AppCompatActivity {
         }
       }
     };
+    underright.setOnClickListener(onClickListener);
     back.setOnClickListener(onClickListener);
     underleft.setOnClickListener(onClickListener);
   }
