@@ -12,11 +12,15 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.renderscript.RenderScript;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reziena.user.reziena_1.utils.RSBlurProcessor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,8 +55,12 @@ import java.util.TimerTask;
 public class TreatActivity_cheekleft extends AppCompatActivity {
 
     String treatResult="";
-
-    ImageView forehead, underleft, underright, eyeleft, eyeright, cheekl, cheekr, mouth, back;
+    RenderScript rs;
+    Bitmap blurBitMap;
+    Animation alphaback;
+    private long mLastClickTime = 0;
+    private static Bitmap bitamp;
+    ImageView forehead, underleft, underright, eyeleft, eyeright, cheekl, cheekr, mouth, back, backgroundimg;
     LinearLayout component;
     String underrightstring,underleftstring,cheekrightstring,cheekleftstring;
     TextView component_txt,u_tright_txt1,u_tright_txt2,u_tleft_txt1,u_tleft_txt2,c_tright_txt1,c_tright_txt2,c_tleft_txt1,c_tleft_txt2;
@@ -100,6 +109,7 @@ public class TreatActivity_cheekleft extends AppCompatActivity {
         final Drawable  cheekunderrightimg= res.getDrawable(R.drawable.cheekunderimg);
         final Drawable  cheekunderleftimg= res.getDrawable(R.drawable.cheekunderleft);
 
+        backgroundimg=findViewById(R.id.background);
         forehead =  (ImageView)findViewById(R.id.forehead_cl);
         underleft =  (ImageView)findViewById(R.id.underleft_cl);
         underright =  (ImageView)findViewById(R.id.underright_cl);
@@ -137,9 +147,37 @@ public class TreatActivity_cheekleft extends AppCompatActivity {
                         overridePendingTransition(0, 0);
                         finish();
                         break;
+
+                    case R.id.cheek_right_cl:
+                        HomeActivity.send("cheek_l->start");
+                        intent = new Intent(getBaseContext(), TreatActivity_cheekright2.class);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                        finish();
+                        break;
+
+                    case R.id.question_cl:
+                        if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                            Log.e("중복터치","하지마세유");
+                            return;
+                        }
+                        mLastClickTime = SystemClock.elapsedRealtime();
+                        intent = new Intent(getApplicationContext(), ExplainActivity.class);
+                        startActivity(intent);
+                        overridePendingTransition(0,0);
+                        new Handler().postDelayed(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                screenshot();
+                            }
+                        }, 20);
+                        break;
                 }
             }
         };
+        cheekr.setOnClickListener(onClickListener);
         back.setOnClickListener(onClickListener);
         cheekl.setOnClickListener(onClickListener);
     }
@@ -348,6 +386,18 @@ public class TreatActivity_cheekleft extends AppCompatActivity {
             }
         }
     }
+
+    public void screenshot(){
+        rs = RenderScript.create(this);
+        View view=getWindow().getDecorView();
+        view.setDrawingCacheEnabled(false);
+        view.setDrawingCacheEnabled(true);
+        bitamp = view.getDrawingCache();
+        RSBlurProcessor rsBlurProcessor = new RSBlurProcessor(rs);
+        blurBitMap = rsBlurProcessor.blur(bitamp, 20f, 3);
+        backgroundimg.setImageBitmap(blurBitMap);
+    }
+
 
     class GetData2 extends AsyncTask<String, Void, String> {
 

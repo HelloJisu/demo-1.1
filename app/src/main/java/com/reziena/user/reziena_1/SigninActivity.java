@@ -89,7 +89,7 @@ public class SigninActivity extends AppCompatActivity {
                                 logincheck.setVisibility(View.INVISIBLE);
                             }
                             else {
-                                if(s.length()>=6&&s.length()<=12) {
+                                if(s.length()>=6&&s.length()<=12&&Pattern.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,12}",password)) {
                                     if (password.equals(confirm)) {
                                         logincheck.setVisibility(View.VISIBLE);
                                         etPasswordConfirm.setTextColor(Color.parseColor("#450969"));

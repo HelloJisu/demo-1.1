@@ -227,7 +227,7 @@
 
 
                         <TextView
-                            android:id="@+id/e_tright_txt"
+                            android:id="@+id/e_tleft_txt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -236,7 +236,7 @@
                             android:textStyle="bold"
                             app:fontFamily="@font/roboto"
                             app:scale_height="108"
-                            app:scale_left="458"
+                            app:scale_left="758"
                             app:scale_textsize="70"
                             app:scale_top="1399"
                             app:scale_width="257"

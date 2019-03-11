@@ -68,7 +68,7 @@ public class TreatActivity_underright2 extends AppCompatActivity {
             u_tright_line7,u_tright_line8,u_tright_line9,u_tright_line10,u_tright_line11,u_tright_line12,u_tright_line13;
     TimerTask second;
     String part;
-    ImageView content1, content2;
+    ImageView content1, content2, question;
     AnimationDrawable utrani1,utrani2,utrani3,utrani4,utrani5,utrani6,utrani7,utrani8,utrani9,utrani10,utrani11,utrani12,utrani13;
     public static String IP_Address = "52.32.36.182";
     String treat;
@@ -452,7 +452,7 @@ public class TreatActivity_underright2 extends AppCompatActivity {
         setContentView(R.layout.activity_treat_underright2);
 
         //값 받아오기
-
+        question=findViewById(R.id.question_ur2);
         content1 = findViewById(R.id.treatup_ur2);
         content2 = findViewById(R.id.treatdown_ur2);
         back=(ImageView)findViewById(R.id.backw_ur);

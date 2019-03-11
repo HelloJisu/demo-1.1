@@ -3,6 +3,7 @@ package com.reziena.user.reziena_1;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +17,24 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Display;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListPopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import android.util.Base64;
 import android.util.*;
 import android.view.*;
@@ -27,6 +46,22 @@ import org.apache.http.client.*;
 import org.apache.http.client.entity.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.impl.client.*;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import java.io.*;
 import java.net.*;
@@ -51,6 +86,7 @@ public class Signin2Activity extends AppCompatActivity {
     LinearLayout signin;
     private Uri mImageCaptureUri;
     private int id_view;
+    private String absolutePath;//
     CircleImageView profile;
     String month, year, genderstring, countrystring, day;
     public static Activity signin2;
@@ -84,7 +120,6 @@ public class Signin2Activity extends AppCompatActivity {
         signin = findViewById(R.id.signin_signin2);
 
         alphasignin = signin.getBackground();
-        //profile.setImageResource(R.drawable.no_profile);
 
         Spinner birthday_year = findViewById(R.id.birthday_year);
         int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -92,14 +127,32 @@ public class Signin2Activity extends AppCompatActivity {
         for(int i=0;i<100;i++){
             yearAdapter.add(year--);
         }
-        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,yearAdapter);
+        ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, R.layout.support_simple_spinner_dropdown_item,yearAdapter);
         birthday_year.setAdapter(arrayAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_year);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner birthday_month = findViewById(R.id.birthday_month);
         ArrayAdapter monthAdapter = ArrayAdapter.createFromResource(this,
                 R.array.birthday_month, R.layout.spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         birthday_month.setAdapter(monthAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_month);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner birthday_day = findViewById(R.id.birthday_day);
         ArrayList<Integer> birthAdapter = new ArrayList<>();
@@ -108,12 +161,30 @@ public class Signin2Activity extends AppCompatActivity {
         }
         ArrayAdapter<Integer> birthdayAdapter = new ArrayAdapter<Integer>(this, R.layout.spinner_item,birthAdapter);
         birthday_day.setAdapter(birthdayAdapter);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(birthday_day);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner couuntry = findViewById(R.id.country);
         ArrayAdapter countryarray = ArrayAdapter.createFromResource(this,
                 R.array.country, R.layout.spinner_item);
         countryarray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         couuntry.setAdapter(countryarray);
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            ListPopupWindow window = (ListPopupWindow)popup.get(couuntry);
+            window.setHeight(500); //pixel
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Spinner gender = findViewById(R.id.gender);
         ArrayAdapter genderAdapter = ArrayAdapter.createFromResource(this,
@@ -243,7 +314,6 @@ public class Signin2Activity extends AppCompatActivity {
                         task.execute("http://"+ HomeActivity.IP_Address +"/saveUser.php", idstring, password, saveName, genderstring, birth, profileurl, countrystring);
                         break;
                     case R.id.signinprofile:
-                        checkPermissions();
                         doTakeAlbumAction();
                         break;
                 }
@@ -342,7 +412,20 @@ public class Signin2Activity extends AppCompatActivity {
             if (result.contains("Error")) {
                 Log.e("Error", "you have Error");
             } else if (result.contains("1 record added")){
-                Log.e("Login ", "1 record added");
+                SharedPreferences sp_userName = getSharedPreferences("userName", MODE_PRIVATE);
+                SharedPreferences sp_userID = getSharedPreferences("userID", MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = sp_userName.edit();
+                SharedPreferences.Editor editor2 = sp_userID.edit();
+                editor1.putString("userName", name);
+                editor2.putString("userID", id);
+                editor1.commit();
+                editor2.commit();
+                Log.e("Login ", name+"님 로그인");
+                Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
+                intent.putExtra("name","skintypedialog");
+                intent.putExtra("signin","finish");
+                startActivity(intent);
+                finish();
             }
         }
     }
@@ -352,6 +435,7 @@ public class Signin2Activity extends AppCompatActivity {
         intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
         startActivityForResult(intent, PICK_FROM_ALBUM);
     }
+
 
     @SuppressLint("NewApi")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -382,14 +466,21 @@ public class Signin2Activity extends AppCompatActivity {
             }
             case CROP_FROM_IMAGE:{
                 if(resultCode!=RESULT_OK){
-                    Log.e("resultCode!=RESULT_OK", "ㅇㅅㅇ");
                     return;
                 }
                 final Bundle extras = data.getExtras();
 
+                String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+
+                        "/SmartWheel"+System.currentTimeMillis()+".jpg";
+
                 if(extras!=null){
-                    photo = extras.getParcelable("data");
+                    Bitmap photo = extras.getParcelable("data");
+                    //Glide.with(this).load(filePath).bitmapTransform(new CropCircleTransformation(new CustomBitmapPool())).into(image);
+
                     profile.setImageBitmap(photo);
+
+                    storeCropImage(photo,filePath);
+                    absolutePath = filePath;
                     break;
                 }
             }
@@ -488,7 +579,6 @@ public class Signin2Activity extends AppCompatActivity {
             }
         }
     }
-
     private void storeCropImage(Bitmap bitmap, String filePath){
         String dirPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/SmartWheel";
         File directory_smartWheel = new File(dirPath);
@@ -497,15 +587,15 @@ public class Signin2Activity extends AppCompatActivity {
             directory_smartWheel.mkdir();
         }
 
-        //File copyFile = new File(filePath);
+        File copyFile = new File(filePath);
         BufferedOutputStream out = null;
 
         try{
-            //copyFile.createNewFile();
-            ///out = new BufferedOutputStream(new FileOutputStream(copyFile));
+            copyFile.createNewFile();
+            out = new BufferedOutputStream(new FileOutputStream(copyFile));
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100,out);
 
-            //sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(copyFile)));
+            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(copyFile)));
 
             out.flush();
             out.close();

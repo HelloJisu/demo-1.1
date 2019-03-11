@@ -12,11 +12,15 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.renderscript.RenderScript;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.reziena.user.reziena_1.utils.RSBlurProcessor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +57,12 @@ public class TreatActivity extends AppCompatActivity {
     int wrinkleresult;
     String wrinkle;
     Intent home;
-    ImageView forehead, underleft, underright, eyeleft, eyeright, cheekl, cheekr, mouth, back;
+    RenderScript rs;
+    Bitmap blurBitMap;
+    Animation alphaback;
+    private long mLastClickTime = 0;
+    private static Bitmap bitamp;
+    ImageView forehead, underleft, underright, eyeleft, eyeright, cheekl, cheekr, mouth, back, backgroundimg;
     LinearLayout component,backbutton;
     TextView component_txt,u_tright_txt1,u_tright_txt2,u_tleft_txt1,u_tleft_txt2,c_tright_txt1,c_tright_txt2,c_tleft_txt1,c_tleft_txt2;
     RelativeLayout treatback, underright_layout, underleft_layout,treat_default,cheekright_layout,cheekleft_layout;
@@ -65,7 +75,7 @@ public class TreatActivity extends AppCompatActivity {
             ,c_tright_line9,c_tright_line10,c_tright_line11,c_tright_line12,c_tright_line13,c_tright_line14,c_tright_line15,c_tright_line16,c_tright_line17
             ,c_tright_line18,c_tright_line19,c_tright_line20,c_tright_line21,c_tright_line22,c_tleft_line1,c_tleft_line2,c_tleft_line3,c_tleft_line4,c_tleft_line5,c_tleft_line6,c_tleft_line7,c_tleft_line8
             ,c_tleft_line9,c_tleft_line10,c_tleft_line11,c_tleft_line12,c_tleft_line13,c_tleft_line14,c_tleft_line15,c_tleft_line16,c_tleft_line17
-            ,c_tleft_line18,c_tleft_line19,c_tleft_line20,c_tleft_line21,c_tleft_line22;
+            ,c_tleft_line18,c_tleft_line19,c_tleft_line20,c_tleft_line21,c_tleft_line22,question;
     TimerTask second;
     String part;
     public static Activity treatactivity;
@@ -93,6 +103,7 @@ public class TreatActivity extends AppCompatActivity {
         final Drawable  cheekunderleftimg= res.getDrawable(R.drawable.cheekunderleft);
         //값 받아오기
 
+        backgroundimg=findViewById(R.id.background); question=findViewById(R.id.question_treat);
         forehead =  (ImageView)findViewById(R.id.forehead); underleft =  (ImageView)findViewById(R.id.underleft); underright =  (ImageView)findViewById(R.id.underright);
         cheekl =  (ImageView)findViewById(R.id.cheek_left); cheekr =  (ImageView)findViewById(R.id.cheek_right); mouth =  (ImageView)findViewById(R.id.mouth);
         eyeleft = (ImageView)findViewById(R.id.eyeleft); eyeright=(ImageView)findViewById(R.id.eyeright); component_txt=(TextView)findViewById(R.id.componenttxt);
@@ -141,7 +152,6 @@ public class TreatActivity extends AppCompatActivity {
                         intent.putExtra("wrinkle",wrinkleresult);
                         startActivity(intent);
                         overridePendingTransition(0, 0);
-                        finish();
                         break;
 
                     case R.id.underleft:
@@ -149,7 +159,6 @@ public class TreatActivity extends AppCompatActivity {
                         intent.putExtra("wrinkle",wrinkleresult);
                         startActivity(intent);
                         overridePendingTransition(0, 0);
-                        finish();
                         break;
 
                     case R.id.cheek_right:
@@ -157,7 +166,6 @@ public class TreatActivity extends AppCompatActivity {
                         intent.putExtra("wrinkle",wrinkleresult);
                         startActivity(intent);
                         overridePendingTransition(0, 0);
-                        finish();
                         break;
 
                     case R.id.cheek_left:
@@ -165,11 +173,50 @@ public class TreatActivity extends AppCompatActivity {
                         intent.putExtra("wrinkle",wrinkleresult);
                         startActivity(intent);
                         overridePendingTransition(0, 0);
-                        finish();
+                        break;
+
+                    case R.id.forehead:
+                        intent = new Intent(getBaseContext(), TreatActivity_forehead.class);
+                        intent.putExtra("wrinkle",wrinkleresult);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                        break;
+
+                    case R.id.eyeright:
+                        intent = new Intent(getBaseContext(), TreatActivity_eye.class);
+                        intent.putExtra("wrinkle",wrinkleresult);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                        break;
+
+                    case R.id.eyeleft:
+                        intent = new Intent(getBaseContext(), TreatActivity_eye.class);
+                        intent.putExtra("wrinkle",wrinkleresult);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+                        break;
+                    case R.id.question_treat:
+                        if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                            Log.e("중복터치","하지마세유");
+                            return;
+                        }
+                        mLastClickTime = SystemClock.elapsedRealtime();
+                        intent = new Intent(getApplicationContext(), ExplainActivity.class);
+                        startActivity(intent);
+                        overridePendingTransition(0,0);
+                        new Handler().postDelayed(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                screenshot();
+                            }
+                        }, 20);
                         break;
                 }
             }
         };
+        question.setOnClickListener(onClickListener);
         backbutton.setOnClickListener(onClickListener);
         back.setOnClickListener(onClickListener);
         forehead.setOnClickListener(onClickListener);
@@ -189,6 +236,19 @@ public class TreatActivity extends AppCompatActivity {
         super.onResume();
         getDataTreat();
     }
+
+
+    public void screenshot(){
+        rs = RenderScript.create(this);
+        View view=getWindow().getDecorView();
+        view.setDrawingCacheEnabled(false);
+        view.setDrawingCacheEnabled(true);
+        bitamp = view.getDrawingCache();
+        RSBlurProcessor rsBlurProcessor = new RSBlurProcessor(rs);
+        blurBitMap = rsBlurProcessor.blur(bitamp, 20f, 3);
+        backgroundimg.setImageBitmap(blurBitMap);
+    }
+
 
     private void getDataTreat() {
         SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);

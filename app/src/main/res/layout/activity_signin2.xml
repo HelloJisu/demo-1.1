@@ -91,8 +91,10 @@
                         android:weightSum="1"
                         android:orientation="horizontal">
                         ﻿<Spinner
+                        android:overlapAnchor="false"
                         android:spinnerMode="dropdown"
                         android:id="@+id/gender"
+                        android:entries="@array/gender"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.8" />
@@ -137,6 +139,8 @@
                         android:weightSum="1"
                         android:orientation="horizontal">
                         ﻿<Spinner
+                        android:overlapAnchor="false"
+                        android:entries="@array/country"
                         android:spinnerMode="dropdown"
                         android:id="@+id/country"
                         android:layout_width="0dp"
@@ -201,18 +205,21 @@
                     android:orientation="horizontal"
                     android:weightSum="1">
                     ﻿<Spinner
+                    android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
                     android:id="@+id/birthday_year"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.35" />
                     ﻿<Spinner
+                    android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
                     android:id="@+id/birthday_month"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.25" />
                     ﻿<Spinner
+                    android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
                     android:id="@+id/birthday_day"
                     android:layout_width="0dp"
