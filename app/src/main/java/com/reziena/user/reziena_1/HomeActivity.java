@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,6 +30,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -39,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -70,12 +73,15 @@ import java.util.Set;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.http.Url;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import java.text.ParseException;
 
 public class HomeActivity extends AppCompatActivity {
 
+    public static boolean isHave;
+    public static String deviceAddress="";
     public static BluetoothAdapter mBtAdapter;
     String deviceName;
     private String mDeviceAddress = "";
@@ -149,8 +155,8 @@ public class HomeActivity extends AppCompatActivity {
     public static String IP_Address = "52.32.36.182";
     static String day_string;
     static String devName = "상아";     //Galaxy Note8, Galaxy S9
-
     private String DB_skintype, DB_moisture="", DB_wrinkle="";
+    String profileS;
 
     @SuppressLint("WrongViewCast")
     @Override
@@ -264,9 +270,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         }
-
-
-
 
         //animation
         final Animation alpha = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_alpha);
@@ -491,6 +494,7 @@ public class HomeActivity extends AppCompatActivity {
                         }, 20);
                         break;
                     case R.id.image:
+                        Log.e("이미지", "눌러씀");
                         doTakeAlbumAction();
                         break;
                     case R.id.imageView2:
@@ -541,6 +545,14 @@ public class HomeActivity extends AppCompatActivity {
         dash_setName.setText("GOOD MORNING, "+ userName+"!");
         Log.e("SharedPreferences", userName);
 
+        GetData task = new GetData();
+        task.execute("http://"+IP_Address+"/callingProfile.php", "");
+        // 여기서 프로필 세팅하면 되는데 url = +profileS
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {}
+        Glide.with(this).load(IP_Address + profileS).into(image_main);
+
         if (isFirst) getBondedDevices();
     }
 
@@ -574,7 +586,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private void getBondedDevices() {
         isFirst = false;
-        String isHave="";
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         Log.e(btTag, "getBondedDevices() init");
 
@@ -611,17 +622,18 @@ public class HomeActivity extends AppCompatActivity {
                 deviceName = bond.getName();
                 Log.e(btTag, "bonded name:" + deviceName);
                 if (deviceName.equals(devName)) {
-                    isHave += "yes";
+                    isHave = true;
+                    deviceAddress = deviceName;
                     Log.e(btTag, "devName: "+deviceName);
                     Log.e(btTag, "devAdd: "+ bond.getAddress());
                     connectToDevice(bond.getAddress());
                 }
             }
-            if (!isHave.contains("yes")) {
-                discoveryStart();
-            }
         }
-        else { discoveryStart(); }
+        else {
+            isHave = false;
+            discoveryStart();
+        }
     }
 
     public void discoveryStart() {
@@ -633,7 +645,6 @@ public class HomeActivity extends AppCompatActivity {
         mDeviceAddress = address;
         device = mBtAdapter.getRemoteDevice(mDeviceAddress);
 
-
         if (mBtAdapter == null || address == null) {
             Log.e(btTag, "mBtAdapter==null & address==null");
             return false;
@@ -643,8 +654,6 @@ public class HomeActivity extends AppCompatActivity {
 
         mBluetoothConnection = new BluetoothConnectionService(getApplicationContext());
         mBluetoothConnection.startClient(device, MY_UUID);
-
-        //discoveryStart();
 
         return true;
     }
@@ -657,6 +666,140 @@ public class HomeActivity extends AppCompatActivity {
             } else {
                 Log.e("퍼미션", "ACCESS_COARSE_LOCATION 삭제하지말라고!!");
             }
+        }
+    }
+
+    // calling Profile
+    class GetData extends AsyncTask<String, Void, String> {
+
+        Bitmap bitmap;
+
+        @Override
+        protected void onPostExecute(String getResult) {
+            super.onPostExecute(getResult);
+
+            if (getResult==null||getResult.contains("No_results")) {
+                Log.e("getdata-profile", "getResult==null");
+                image_main.setImageResource(R.drawable.no_profile);
+                image.setImageResource(R.drawable.no_profile);
+
+            } else {
+                Log.e("getdata-profile", "getResult=="+getResult);
+                showResult(getResult);
+                Log.e("아 진짜 싀발", IP_Address + profileS);
+                setProfile task = new setProfile();
+                task.execute("http://"+IP_Address+profileS, "");
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String serverURL = params[0];
+
+            SharedPreferences sp_userID = getSharedPreferences("userID", MODE_PRIVATE);
+            String userID = sp_userID.getString("userID", "");
+            String postParameters = "id="+userID;
+            Log.e("user-id", userID);
+
+            try {
+                URL url = new URL(serverURL);
+
+                HttpURLConnection httpURLConnection= (HttpURLConnection)url.openConnection();
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.connect();
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(postParameters.getBytes("UTF-8"));
+                Log.e("moisture-postParameters", postParameters);
+                outputStream.flush();
+                outputStream.close();
+
+                InputStream inputStream;
+                int responseStatusCode = httpURLConnection.getResponseCode();
+                if(responseStatusCode == HttpURLConnection.HTTP_OK) {
+                    inputStream = httpURLConnection.getInputStream();
+                    Log.e("proflie-response", "code - HTTP_OK - " + responseStatusCode);
+                }
+                else{
+                    inputStream = httpURLConnection.getErrorStream();
+                    Log.e("proflie-response", "code - HTTP_NOT_OK - " + responseStatusCode);
+                }
+
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                StringBuilder sb = new StringBuilder();
+                String line;
+
+                while((line = bufferedReader.readLine()) != null){
+                    sb.append(line);
+                }
+                bufferedReader.close();
+
+                return sb.toString().trim();
+
+            } catch (Exception e) {
+                Log.e("profile-error-stream", e.getMessage());
+            }
+            return null;
+        }
+
+        private void showResult(String result){
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("getData");
+
+                for(int i=0;i<jsonArray.length();i++){
+                    JSONObject item = jsonArray.getJSONObject(i);
+                    profileS = item.getString("profile");
+                    Log.e("user-profile ", profileS);
+                }
+
+            } catch (JSONException e) {
+                Log.d("profile-JSON", "showResult : ", e);
+            }
+
+        }
+    }
+
+    // set Profile
+    class setProfile extends AsyncTask<String, Void, String> {
+
+        Bitmap bitmap;
+
+        @Override
+        protected void onPostExecute(String getResult) {
+            super.onPostExecute(getResult);
+
+            image_main.setImageBitmap(bitmap);
+            image.setImageBitmap(bitmap);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String serverURL = params[0];
+
+            try {
+                URL url = new URL(serverURL);
+
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setReadTimeout(5000);
+                httpURLConnection.setConnectTimeout(5000);
+
+                httpURLConnection.connect();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+
+                bitmap = BitmapFactory.decodeStream(inputStream);
+
+                Log.e("profile", String.valueOf(bitmap));
+            } catch (Exception e) {
+                Log.e("profile setting", "error"+e.getMessage());
+            }
+            return null;
         }
     }
 
@@ -1103,7 +1246,7 @@ public class HomeActivity extends AppCompatActivity {
             String dates[] = date.split("-");
 
             // DB에서 반환된 값이 없을 때 모두 nonCheck
-            if (getResult.contains("No_results")) {
+            if (getResult==null||getResult.contains("No_results")) {
                 Log.e("getdata-treat", "getResult==null");
                 DB_wrinkle = "-";
                 wrinkle_up.setVisibility(View.INVISIBLE);
@@ -1255,53 +1398,51 @@ public class HomeActivity extends AppCompatActivity {
             super.onPostExecute(getResult);
 
             //Log.e("setArrow-Result", getResult);
-            Log.e("현재디비", DB_moisture+DB_wrinkle);
+            //Log.e("현재디비", DB_moisture+DB_wrinkle);
 
-            Log.e("setArrow", getResult);
+            //Log.e("setArrow", getResult);
 
-            showResult(getResult);
+            if (getResult != null) {
+                showResult(getResult);
 
-            if (getResult.contains("No_results")) {
-                if (getResult.contains("moisture")) {
-                    mois_up.setVisibility(View.INVISIBLE);
-                    mois_down.setVisibility(View.INVISIBLE);
+                if (getResult.contains("No_results")) {
+                    if (getResult.contains("moisture")) {
+                        mois_up.setVisibility(View.INVISIBLE);
+                        mois_down.setVisibility(View.INVISIBLE);
+                    } else if (getResult.contains("wrinkle")) {
+                        wrinkle_up.setVisibility(View.INVISIBLE);
+                        wrinkle_down.setVisibility(View.INVISIBLE);
+                    }
+                } else if (getResult.contains("moisture")) {
+                    if (mois.equals("up")) {
+                        Log.e("setting-moisture", "up");
+                        mois_up.setVisibility(View.VISIBLE);
+                        mois_down.setVisibility(View.INVISIBLE);
+                    } else if (mois.equals("down")) {
+                        Log.e("setting-moisture", "down");
+                        mois_up.setVisibility(View.INVISIBLE);
+                        mois_down.setVisibility(View.VISIBLE);
+                    } else {
+                        Log.e("setting-moisture", "else");
+                        mois_up.setVisibility(View.INVISIBLE);
+                        mois_down.setVisibility(View.INVISIBLE);
+                    }
+                } else if (getResult.contains("wrinkle")) {
+                    if (wrink.equals("up")) {
+                        Log.e("setting-wrinkle", "up");
+                        wrinkle_up.setVisibility(View.VISIBLE);
+                        wrinkle_down.setVisibility(View.INVISIBLE);
+                    } else if (wrink.equals("down")) {
+                        Log.e("setting-wrinkle", "down");
+                        wrinkle_up.setVisibility(View.INVISIBLE);
+                        wrinkle_down.setVisibility(View.VISIBLE);
+                    } else {
+                        Log.e("setting-wrinkle", "else");
+                        wrinkle_up.setVisibility(View.INVISIBLE);
+                        wrinkle_down.setVisibility(View.INVISIBLE);
+                    }
                 }
-                else if (getResult.contains("wrinkle")) {
-                    wrinkle_up.setVisibility(View.INVISIBLE);
-                    wrinkle_down.setVisibility(View.INVISIBLE);
-                }
-            }
-            else if (getResult.contains("moisture")) {
-                if(mois.equals("up")) {
-                    Log.e("setting-moisture", "up");
-                    mois_up.setVisibility(View.VISIBLE);
-                    mois_down.setVisibility(View.INVISIBLE);
-                } else if(mois.equals("down")) {
-                    Log.e("setting-moisture", "down");
-                    mois_up.setVisibility(View.INVISIBLE);
-                    mois_down.setVisibility(View.VISIBLE);
-                } else {
-                    Log.e("setting-moisture", "else");
-                    mois_up.setVisibility(View.INVISIBLE);
-                    mois_down.setVisibility(View.INVISIBLE);
-                }
-            }
-            else if (getResult.contains("wrinkle")) {
-                if(wrink.equals("up")) {
-                    Log.e("setting-wrinkle", "up");
-                    wrinkle_up.setVisibility(View.VISIBLE);
-                    wrinkle_down.setVisibility(View.INVISIBLE);
-                }
-                else if(wrink.equals("down")) {
-                    Log.e("setting-wrinkle", "down");
-                    wrinkle_up.setVisibility(View.INVISIBLE);
-                    wrinkle_down.setVisibility(View.VISIBLE);
-                }
-                else {
-                    Log.e("setting-wrinkle", "else");
-                    wrinkle_up.setVisibility(View.INVISIBLE);
-                    wrinkle_down.setVisibility(View.INVISIBLE);
-                }
+
             }
         }
 

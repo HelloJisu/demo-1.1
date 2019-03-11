@@ -3,6 +3,7 @@ package com.reziena.user.reziena_1;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.ImageFormat;
@@ -159,7 +160,9 @@ public class MainActivity extends AppCompatActivity {
                 String imagePath = (Environment.getExternalStorageDirectory()+"/pic.jpg").toString();
                 img_input = new Mat();
                 img_output = new Mat();
-
+                Intent intent = new Intent(getApplicationContext(), WrinkleResultActivity.class);
+                overridePendingTransition(0,0);
+                startActivity(intent);
                 //loadImage(imagePath, img_input.getNativeObjAddr(), cascadeClassifier_face);
             }
         });

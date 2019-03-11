@@ -220,12 +220,10 @@ public class SigninActivity extends AppCompatActivity {
                     etPassword.requestFocus();
                     return;
                 }
-
                 getUser task = new getUser();
                 task.execute("http://"+HomeActivity.IP_Address+"/getUser.php", etEmail.getText().toString());
             }
         });
-
     }
 
     class getUser extends AsyncTask<String, Void, String> {

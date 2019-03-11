@@ -37,6 +37,8 @@ public class BTOnActivity extends AppCompatActivity {
     boolean nowInter=false;
     String action="";
     BluetoothDevice device;
+    TimerTask timerTask;
+
     private static final UUID MY_UUID = UUID.fromString("00000003-0000-1000-8000-00805f9b34fb");
 
     @Override
@@ -88,7 +90,6 @@ public class BTOnActivity extends AppCompatActivity {
         };
         retry.setOnClickListener(onClickListener);
         no_retry.setOnClickListener(onClickListener);
-
     }
 
     private void startThread() {
@@ -99,41 +100,28 @@ public class BTOnActivity extends AppCompatActivity {
         retry.setVisibility(View.INVISIBLE);
         no_retry.setVisibility(View.INVISIBLE);
 
-        t = new Thread(new Runnable() {
+        timerTask = new TimerTask() {
             @Override
             public void run() {
-                while (countDown>0) {
-                    countDown--;
-                    Log.e("countdown", String.valueOf(countDown));
-                    // UI 작업 X
-                    try {
-                        if (!nowInter) {
-                            t.sleep(1000);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                countDown--;
+                Log.e("countdown", String.valueOf(countDown));
+                // UI 작업 X
+
+                // UI 작업 O
+                runOnUiThread(() -> {
+                    txt3.setText(countDown+"초");
+                    if (countDown<=0) {
+                        unregisterReceiver(mBroadcastReceiver1);
+                        timerTask.cancel();
+                        txt2.setText("디바이스를 못 찾았어요");
+                        retry.setVisibility(View.VISIBLE);
+                        no_retry.setVisibility(View.VISIBLE);
                     }
-                    // UI 작업 O
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // UI 작업 O
-                            txt3.setText(countDown+"초");
-                            if (countDown<=0) {
-                                txt2.setText("디바이스를 못 찾았어요");
-                                retry.setVisibility(View.VISIBLE);
-                                no_retry.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    });
-                }
-                /*if (countDown<=0) {
-                    unregisterReceiver(mBroadcastReceiver1);
-                    t.interrupt();
-                }*/
-            }
-        });
-        t.start();
+                });
+            } // end of run
+        }; // end of timerTask
+        Timer timer = new Timer();
+        timer.schedule(timerTask, 0, 1000);
         discoveryStart();
     }
 
@@ -193,30 +181,32 @@ public class BTOnActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
 
             action = intent.getAction();
-            Log.e("BT", "onReceive: ACTION____________come in Receiver1");
-            Log.e("action", action);
+            //Log.e("BT", "onReceive: ACTION____________come in Receiver1");
 
             /** When Deviece Found */
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                Log.e("BT", "action_found");
+                Log.e("BT", "action_found_______________");
+                /*if (HomeActivity.isHave) {
+                    Log.e("isHave??", "Yes~!!~!~!!!");
+                    unregisterReceiver(mBroadcastReceiver1);
+                    timerTask.cancel();
+                    connectToDevice(HomeActivity.deviceAddress);
+                }*/
                 device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
                 if (device.getName()!=null) {
-                    //Log.e("action_foundt", HomeActivity.devName);
-                    if (device.getName().equals("상아")) {
+                    Log.e("action_foundt", device.getName());
+                    if (device.getName().equals(HomeActivity.devName)) {
                         isFound = true;
                         nowInter=true;
                         Log.e(HomeActivity.devName, "디바이스 찾ㅇa!");
-                        t.interrupt();
-                        Log.e("t.interrupt:", String.valueOf(t.isInterrupted()));
-                        if (t.isInterrupted()) {
-                            t.stop();
-                        }
+                        //nowInter=true;
                         unregisterReceiver(mBroadcastReceiver1);
+                        timerTask.cancel();
+
                         if (device.getBondState()==BluetoothDevice.BOND_NONE) {
                             Log.e("bondedState?!", String.valueOf(device.getBondState())+"BOND_NONE");
                             device.createBond();
                             bond();
-
                         } else if (device.getBondState()==BluetoothDevice.BOND_BONDED) {
                             Log.e("bondedState?!", String.valueOf(device.getBondState())+"BOND_BONDED");// BOND_BONDED -> 12
                             connectToDevice(device.getAddress());
@@ -225,18 +215,19 @@ public class BTOnActivity extends AppCompatActivity {
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Log.e("꺅!!", action);
+                unregisterReceiver(mBroadcastReceiver1);
+                timerTask.cancel();
                 if (BluetoothConnectionService.success) {
-                    t.interrupt();
-                    intent = new Intent(getApplicationContext(), HomeActivity.class);
+                    Log.e("bt connection", "success");
+                    intent = new Intent(getApplicationContext(), BluetoothActivity.class);
                     startActivity(intent);
+                    finish();
                 } else {
                     txt2.setText("디바이스를 못 찾았어요");
                     txt3.setText("0");
                     nowInter=true;
-                    t.interrupt();
                     retry.setVisibility(View.VISIBLE);
                     no_retry.setVisibility(View.VISIBLE);
-                    Log.e("t.isInterrupted()", String.valueOf(t.isInterrupted()));
                 }
             }
         }
